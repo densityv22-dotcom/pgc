@@ -109,7 +109,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, query, orderBy, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, onSnapshot, query, orderBy, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAu31P9_fYebyc05OH31K6sxZ1POgeYjVE",
@@ -126,6 +126,7 @@
         const googleProvider = new GoogleAuthProvider();
 
         let currentUserData = null;
+        let userListenerUnsubscribe = null;
 
         // Login Handler
         document.getElementById('btn-login').addEventListener('click', async () => {
@@ -133,7 +134,12 @@
         });
 
         // Auth Observer 
-        onAuthStateChanged(auth, async (user) => {
+        onAuthStateChanged(auth, (user) => {
+            if (userListenerUnsubscribe) {
+                userListenerUnsubscribe();
+                userListenerUnsubscribe = null;
+            }
+
             if (user) {
                 document.getElementById('btn-login').classList.add('hidden');
                 document.getElementById('user-profile-badge').classList.remove('hidden');
@@ -141,17 +147,20 @@
                 document.getElementById('user-display-name').textContent = user.displayName;
 
                 const userRef = doc(db, "users", user.uid);
-                const userSnap = await getDoc(userRef);
-
-                if (userSnap.exists()) {
-                    currentUserData = userSnap.data();
-                    document.getElementById('user-role-badge').textContent = currentUserData.role.toUpperCase();
-                    
-                    if (currentUserData.ownedChannelId) {
-                        document.getElementById('btn-add-video').classList.remove('hidden');
-                        document.getElementById('btn-add-video').classList.add('flex');
+                userListenerUnsubscribe = onSnapshot(userRef, (userSnap) => {
+                    if (userSnap.exists()) {
+                        currentUserData = userSnap.data();
+                        document.getElementById('user-role-badge').textContent = (currentUserData.role || 'STANDARD').toUpperCase();
+                        
+                        if (currentUserData.ownedChannelId) {
+                            document.getElementById('btn-add-video').classList.remove('hidden');
+                            document.getElementById('btn-add-video').classList.add('flex');
+                        } else {
+                            document.getElementById('btn-add-video').classList.add('hidden');
+                            document.getElementById('btn-add-video').classList.remove('flex');
+                        }
                     }
-                }
+                });
             } else {
                 document.getElementById('btn-login').classList.remove('hidden');
                 document.getElementById('user-profile-badge').classList.add('hidden');
@@ -206,7 +215,6 @@
             e.preventDefault();
             if (!auth.currentUser || !currentUserData) return;
 
-            // Get the submit button to disable it instantly
             const submitBtn = e.target.querySelector('button[type="submit"]');
 
             // 1. Authorization Guard
@@ -237,7 +245,6 @@
             }
 
             try {
-                // INSTANTLY disable button and change text to prevent double submission
                 submitBtn.disabled = true;
                 submitBtn.innerText = "Publishing Video...";
 
@@ -256,8 +263,6 @@
                     lastVideoUploadTime: currentTime
                 });
 
-                currentUserData.lastVideoUploadTime = currentTime;
-
                 alert("Success! Your video has been spotlighted onto the global feed.");
                 document.getElementById('video-submission-form').reset();
                 closeVideoModal();
@@ -266,7 +271,6 @@
                 console.error("Firestore Upload Error Logs:", err);
                 alert("An error occurred while uploading.");
             } finally {
-                // Re-enable button after processing finishes (or crashes)
                 submitBtn.disabled = false;
                 submitBtn.innerText = "Publishing Video Link";
             }
