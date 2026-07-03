@@ -100,13 +100,16 @@
         </div>
     </div>
 
+    <!-- Footer -->
+    <footer class="border-t border-slate-900 bg-slate-950/60 py-6 text-center text-xs text-slate-600 mt-12">
+        &copy; 2026 PKCraftHub. Not affiliated with Mojang Studios or Microsoft.
+    </footer>
+
     <!-- Core Logic Engine -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        
-        const firestoreImportUrl = "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        const { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, query, orderBy } = await import(firestoreImportUrl);
+        import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, query, orderBy, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAu31P9_fYebyc05OH31K6sxZ1POgeYjVE",
@@ -144,7 +147,6 @@
                     currentUserData = userSnap.data();
                     document.getElementById('user-role-badge').textContent = currentUserData.role.toUpperCase();
                     
-                    // Critical Authorization Guard: Verify user has registered a profile channel card
                     if (currentUserData.ownedChannelId) {
                         document.getElementById('btn-add-video').classList.remove('hidden');
                         document.getElementById('btn-add-video').classList.add('flex');
@@ -158,7 +160,7 @@
             }
         });
 
-        // Helper: Rigorous Extract Mechanism for ALL types of YouTube links
+        // Helper: Extracts unique 11-character ID from all formats of YouTube links
         function extractVideoID(url) {
             const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
             const match = url.match(regExp);
@@ -199,18 +201,21 @@
             });
         });
 
-        // Form Submit Handler (Verification and 7 Days Limitation Enforcement)
+        // Form Submit Handler (With Double-Click Protection)
         document.getElementById('video-submission-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!auth.currentUser || !currentUserData) return;
 
-            // 1. Authorization Check: Must be a registered creator
+            // Get the submit button to disable it instantly
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+
+            // 1. Authorization Guard
             if (!currentUserData.ownedChannelId) {
                 alert("Access Denied: You must register your channel on the Leaderboard first!");
                 return;
             }
 
-            // 2. Cooldown Limitation Check: 7 Days Check (7 days = 604,800,000 ms)
+            // 2. 7-Day Cooldown Limitation Enforcement
             const currentTime = Date.now();
             const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
             
@@ -225,18 +230,20 @@
             const titleInput = document.getElementById('vid-title').value;
             const videoId = extractVideoID(urlInput);
 
-            // 3. Validation Check: Error out cleanly if URL fails parsing logic
+            // 3. Link Parsing Check
             if (!videoId) {
-                alert("Invalid URL structure! Please paste a clean, active share link or watch URL straight from YouTube.");
+                alert("Invalid URL structure! Please paste a clean watch link or share link straight from YouTube.");
                 return;
             }
 
             try {
-                // Post to 'videos' collection tracking feed entries
+                // INSTANTLY disable button and change text to prevent double submission
+                submitBtn.disabled = true;
+                submitBtn.innerText = "Publishing Video...";
+
                 const videoDocId = `vid_${auth.currentUser.uid}_${currentTime}`;
-                const { doc: fsDoc, setDoc: fsSetDoc, updateDoc: fsUpdateDoc } = await import(firestoreImportUrl);
                 
-                await fsSetDoc(fsDoc(db, "videos", videoDocId), {
+                await setDoc(doc(db, "videos", videoDocId), {
                     videoId: videoId,
                     title: titleInput,
                     creatorName: auth.currentUser.displayName,
@@ -245,21 +252,23 @@
                     timestamp: currentTime
                 });
 
-                // Update configuration counters on target User account profile
-                await fsUpdateDoc(fsDoc(db, "users", auth.currentUser.uid), {
+                await updateDoc(doc(db, "users", auth.currentUser.uid), {
                     lastVideoUploadTime: currentTime
                 });
 
-                // Sync internal object map states locally
                 currentUserData.lastVideoUploadTime = currentTime;
 
-                alert("Success! Your video has been spotlighted onto the global trending directory feed.");
+                alert("Success! Your video has been spotlighted onto the global feed.");
                 document.getElementById('video-submission-form').reset();
                 closeVideoModal();
 
             } catch (err) {
-                console.error("Firestore Upload Registry Fault:", err);
-                alert("An error occurred while uploading. Please check connection records.");
+                console.error("Firestore Upload Error Logs:", err);
+                alert("An error occurred while uploading.");
+            } finally {
+                // Re-enable button after processing finishes (or crashes)
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Publishing Video Link";
             }
         });
 
