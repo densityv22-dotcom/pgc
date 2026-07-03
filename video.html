@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PK Craft Hub | Trending Videos Feed</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f19; overflow-x: hidden; }
+        .text-gradient { background: linear-gradient(135deg, #ff0055 0%, #ff5500 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .video-card { transition: all 0.3s ease; }
+        .video-card:hover { transform: translateY(-4px); border-color: rgba(239, 68, 68, 0.4); }
+    </style>
+</head>
+<body class="text-slate-200 min-h-screen flex flex-col">
+
+    <!-- Header / Navbar -->
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-gradient-to-tr from-red-600 to-orange-500 p-2 rounded-xl text-white">
+                    <i class="fa-solid fa-cubes text-xl"></i>
+                </div>
+                <span class="font-extrabold text-xl tracking-tight text-white">PK<span class="text-red-500">Craft</span>Hub</span>
+            </div>
+            
+            <div class="flex items-center gap-6">
+                <nav class="flex items-center gap-6">
+                    <a href="index.html" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Leaderboard</a>
+                    <a href="videos.html" class="text-sm font-bold text-red-500 border-b-2 border-red-500 pb-1">Trending Videos</a>
+                </nav>
+                <button id="btn-submit-video" onclick="openVideoModal()" class="hidden items-center gap-2 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-xs font-bold transition-all text-white shadow-lg shadow-red-600/20">
+                    <i class="fa-solid fa-square-plus"></i> Share Video
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Arena -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-12 animate__animated animate__fadeIn">
+            <span class="bg-orange-500/10 text-orange-400 text-xs font-bold px-3 py-1.5 rounded-full border border-orange-500/20 uppercase inline-block mb-3">Community Spotlight</span>
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-2">
+                Latest Creator <span class="text-gradient">Uploads</span>
+            </h1>
+            <p class="text-slate-400 text-sm">Videos shared by verified community creators over the last 7 days. Sorted by engagement clicks.</p>
+        </div>
+
+        <!-- Videos Grid Container -->
+        <div id="video-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Loading states vanish instantly when script fires -->
+            <div class="shimmer-placeholder h-64 bg-slate-900/40 rounded-2xl border border-slate-800 animate-pulse"></div>
+            <div class="shimmer-placeholder h-64 bg-slate-900/40 rounded-2xl border border-slate-800 animate-pulse"></div>
+            <div class="shimmer-placeholder h-64 bg-slate-900/40 rounded-2xl border border-slate-800 animate-pulse"></div>
+        </div>
+    </main>
+
+    <!-- Share Video Modal -->
+    <div id="video-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
+            <button onclick="closeVideoModal()" class="absolute right-5 top-5 text-slate-500 hover:text-slate-300"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h3 class="text-xl font-bold text-white mb-4"><i class="fa-brands fa-youtube text-red-500 mr-2"></i>Feature Your Latest Video</h3>
+            <form id="video-submission-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1">Video Title</label>
+                    <input type="text" id="vid-title" required placeholder="e.g., Playing on BlazeSMP!" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1">YouTube Video URL</label>
+                    <input type="url" id="vid-url" required placeholder="https://www.youtube.com/watch?v=..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500">
+                </div>
+                <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-orange-500 text-white font-bold py-3.5 rounded-xl text-sm shadow-lg">Publish to Feed</button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAu31P9_fYebyc05OH31K6sxZ1POgeYjVE",
+            authDomain: "pgcwebsite.firebaseapp.com",
+            projectId: "pgcwebsite",
+            storageBucket: "pgcwebsite.firebasestorage.app",
+            messagingSenderId: "335632389340",
+            appId: "1:335632389340:web:d21defb70d032c934a5019"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUserData = null;
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userSnap = await getDoc(doc(db, "users", user.uid));
+                if (userSnap.exists()) {
+                    currentUserData = userSnap.data();
+                    if (currentUserData.ownedChannelId) {
+                        document.getElementById('btn-submit-video').classList.remove('hidden');
+                        document.getElementById('btn-submit-video').classList.add('flex');
+                    }
+                }
+            }
+        });
+
+        // Realtime Video Monitor Engine
+        onSnapshot(collection(db, "videos"), (snapshot) => {
+            const grid = document.getElementById('video-grid');
+            let videoList = [];
+            const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                if (data.timestamp >= sevenDaysAgo) {
+                    videoList.push({ id: doc.id, ...data });
+                }
+            });
+
+            videoList.sort((a, b) => b.clicks - a.clicks);
+
+            // IF NO VIDEOS YET: Instantly replace empty spaces with a custom text response!
+            if (videoList.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-16 text-slate-500 bg-slate-900/10 border border-slate-800 rounded-2xl font-semibold"><i class="fa-solid fa-video-slash text-2xl block mb-2 text-slate-600"></i> No videos uploaded in the last 7 days yet!</div>`;
+                return;
+            }
+
+            grid.innerHTML = '';
+            videoList.forEach((video, index) => {
+                const videoId = extractYouTubeId(video.url);
+                // Dynamically fetch actual high-resolution YouTube thumbnail images using url keys
+                const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=500';
+                
+                let trendingBadge = '';
+                if (index === 0 && video.clicks > 0) {
+                    trendingBadge = `<span class="absolute top-3 left-3 bg-red-600 text-white text-[10px] font-black uppercase px-2.5 py-1 rounded-md shadow flex items-center gap-1"><i class="fa-solid fa-fire text-amber-300"></i> #1 Trending</span>`;
+                } else if (index === 1 && video.clicks > 0) {
+                    trendingBadge = `<span class="absolute top-3 left-3 bg-orange-500 text-white text-[10px] font-black uppercase px-2.5 py-1 rounded-md shadow flex items-center gap-1">#2 Trending</span>`;
+                }
+
+                grid.innerHTML += `
+                    <div class="video-card relative bg-slate-900/40 border border-slate-800/80 rounded-2xl overflow-hidden flex flex-col justify-between h-full">
+                        <div class="relative group cursor-pointer overflow-hidden" onclick="window.watchVideo('${video.id}', '${video.url}')">
+                            <img src="${thumbnailUrl}" alt="Thumbnail" class="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300">
+                            <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 flex items-center justify-center">
+                                <div class="bg-red-600 w-12 h-12 rounded-full flex items-center justify-center text-white text-lg shadow-lg"><i class="fa-solid fa-play ml-1"></i></div>
+                            </div>
+                            ${trendingBadge}
+                        </div>
+                        <div class="p-4 flex-grow flex flex-col justify-between">
+                            <div>
+                                <h3 class="font-bold text-white text-sm line-clamp-2">${video.title}</h3>
+                                <div class="flex items-center gap-2 mt-3">
+                                    <img src="${video.creatorLogo || ''}" class="w-5 h-5 rounded-full object-cover">
+                                    <span class="text-xs text-slate-400 font-medium">${video.creatorName || 'Unknown'}</span>
+                                </div>
+                            </div>
+                            <div class="border-t border-slate-800/60 mt-4 pt-3 flex items-center justify-between text-[11px] text-slate-500">
+                                <span><i class="fa-solid fa-eye mr-1"></i>${video.clicks || 0} Platform Clicks</span>
+                                <span>New Uploader</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        });
+
+        window.watchVideo = async function(id, url) {
+            try { await updateDoc(doc(db, "videos", id), { clicks: increment(1) }); } catch(err){}
+            window.open(url, '_blank');
+        };
+
+        function extractYouTubeId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        document.getElementById('video-submission-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!auth.currentUser || !currentUserData || !currentUserData.ownedChannelId) return;
+
+            const title = document.getElementById('vid-title').value;
+            const url = document.getElementById('vid-url').value;
+            const videoId = extractYouTubeId(url);
+
+            if (!videoId) { alert("Invalid YouTube link!"); return; }
+
+            try {
+                await setDoc(doc(db, "videos", `vid_${videoId}`), {
+                    title: title, url: url,
+                    creatorName: auth.currentUser.displayName, creatorLogo: auth.currentUser.photoURL,
+                    creatorChannelId: currentUserData.ownedChannelId, clicks: 0, timestamp: Date.now()
+                });
+                closeVideoModal();
+                document.getElementById('video-submission-form').reset();
+            } catch (err) { console.error(err); }
+        });
+
+        window.openVideoModal = function() { document.getElementById('video-modal').classList.remove('hidden'); }
+        window.closeVideoModal = function() { document.getElementById('video-modal').classList.add('hidden'); }
+    </script>
+</body>
+</html>
