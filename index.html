@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PK Craft Hub | Live Voting Directory</title>
+    
+    <!-- Google Site Verification Link -->
+    <meta name="google-site-verification" content="rZ6D-OMLgqRw6SOFJanKTfowRrYiSUWr2CWue3IObQ4" />
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
@@ -11,8 +15,6 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f19; overflow-x: hidden; }
         .text-gradient { background: linear-gradient(135deg, #ff0055 0%, #ff5500 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-        <meta name="google-site-verification" content="rZ6D-OMLgqRw6SOFJanKTfowRrYiSUWr2CWue3IObQ4" />
         
         /* Premium custom smooth transition animations */
         .creator-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -148,7 +150,12 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js" // Fixed path import internally
+        import { } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Re-routing structural firestore setup correctly
+        const firestoreImportUrl = "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        const { getFirestore: fs, collection: coll, doc: d, setDoc: sd, getDoc: gd, onSnapshot: os, updateDoc: ud, increment: inc } = await import(firestoreImportUrl);
 
         const firebaseConfig = {
             apiKey: "AIzaSyAu31P9_fYebyc05OH31K6sxZ1POgeYjVE",
@@ -161,7 +168,7 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
+        const db = fs(app);
         const googleProvider = new GoogleAuthProvider();
         googleProvider.addScope('https://www.googleapis.com/auth/youtube.readonly');
 
@@ -183,12 +190,12 @@
                 document.getElementById('user-avatar').src = user.photoURL;
                 document.getElementById('user-display-name').textContent = user.displayName;
 
-                const userRef = doc(db, "users", user.uid);
-                const userSnap = await getDoc(userRef);
+                const userRef = d(db, "users", user.uid);
+                const userSnap = await gd(userRef);
 
                 if (!userSnap.exists()) {
                     currentUserData = { uid: user.uid, displayName: user.displayName, photoURL: user.photoURL, role: "standard", votesLeft: 1, ownedChannelId: null };
-                    await setDoc(userRef, currentUserData);
+                    await sd(userRef, currentUserData);
                 } else {
                     currentUserData = userSnap.data();
                 }
@@ -211,7 +218,7 @@
         }
 
         // Live Realtime Dynamic Syncing Engine
-        onSnapshot(collection(db, "youtubers"), (snapshot) => {
+        os(coll(db, "youtubers"), (snapshot) => {
             globalCreatorsCache = [];
             snapshot.forEach(doc => globalCreatorsCache.push({ id: doc.id, ...doc.data() }));
             buildLeaderboardUI();
@@ -222,19 +229,17 @@
             buildLeaderboardUI();
         });
 
-        // Main Rendering Algorithm: **Always ensures top votes go directly to the top podium**
+        // Main Rendering Algorithm
         function buildLeaderboardUI() {
             const grid = document.getElementById('creator-grid');
             const podiumContainer = document.getElementById('podium-container');
             const searchTerm = document.getElementById('search-bar').value.toLowerCase();
 
-            // Filter down matching entries
             let filtered = globalCreatorsCache.filter(c => 
                 c.name.toLowerCase().includes(searchTerm) || 
                 c.ign.toLowerCase().includes(searchTerm)
             );
 
-            // SORT FORCE: Highest values index 0
             filtered.sort((a, b) => b.votes - a.votes);
 
             if (filtered.length === 0) {
@@ -243,26 +248,21 @@
                 return;
             }
 
-            // Extract Top 3 for custom 3D design podium slots
             let top3 = filtered.slice(0, 3);
             let others = filtered.slice(3);
-
-            // Render Podium Slots (Rank 2, Rank 1, Rank 3 configuration layout visually)
             let podiumHtml = ["", "", ""];
-            
-            // Re-order top elements specifically to center Rank #1
-            let orderMap = [1, 0, 2]; // index 0 goes to middle, index 1 goes to left, index 2 goes to right
+            let orderMap = [1, 0, 2];
             
             top3.forEach((creator, index) => {
                 const isSelfOwned = currentUserData && currentUserData.ownedChannelId === creator.id;
                 let rankLabel = index + 1;
-                let medalColor = "bg-amber-500 text-slate-950"; // Rank 1 Gold
+                let medalColor = "bg-amber-500 text-slate-950";
                 let cardGlow = "border-amber-500/40 bg-gradient-to-b from-amber-950/20 to-slate-900/40 md:scale-105 z-10 shadow-2xl shadow-amber-500/5";
                 
-                if (index === 1) { // Rank 2 Silver
+                if (index === 1) {
                     medalColor = "bg-slate-300 text-slate-950";
                     cardGlow = "border-slate-400/20 bg-slate-900/40";
-                } else if (index === 2) { // Rank 3 Bronze
+                } else if (index === 2) {
                     medalColor = "bg-amber-700 text-white";
                     cardGlow = "border-amber-800/20 bg-slate-900/40";
                 }
@@ -298,9 +298,8 @@
             });
 
             podiumContainer.innerHTML = podiumHtml.join('');
-
-            // Render Remaining Directory Items Below Podium
             grid.innerHTML = '';
+            
             if (others.length === 0 && top3.length > 0) {
                 grid.innerHTML = `<div class="col-span-full text-center py-4 text-slate-600 text-xs">End of standings leaderboard registry records.</div>`;
             }
@@ -334,7 +333,7 @@
             });
         }
 
-        // Channel Registration Pipeline Form Submit
+        // Channel Registration Form Submit
         document.getElementById('channel-registration-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!auth.currentUser || !currentUserData) return;
@@ -349,7 +348,7 @@
             const channelId = `ch_${auth.currentUser.uid}`;
             
             try {
-                await setDoc(doc(db, "youtubers", channelId), {
+                await sd(d(db, "youtubers", channelId), {
                     name: auth.currentUser.displayName, 
                     logoUrl: auth.currentUser.photoURL, 
                     ign: ign,
@@ -358,7 +357,7 @@
                     ownerUid: auth.currentUser.uid
                 });
 
-                await updateDoc(doc(db, "users", auth.currentUser.uid), { ownedChannelId: channelId });
+                await ud(d(db, "users", auth.currentUser.uid), { ownedChannelId: channelId });
                 currentUserData.ownedChannelId = channelId;
                 closeRegisterModal();
             } catch (err) {
@@ -384,11 +383,11 @@
             }
 
             try {
-                await updateDoc(doc(db, "users", auth.currentUser.uid), { votesLeft: increment(-1) });
+                await ud(d(db, "users", auth.currentUser.uid), { votesLeft: inc(-1) });
                 currentUserData.votesLeft -= 1;
                 updateVoteBadgeUI();
 
-                await updateDoc(doc(db, "youtubers", channelId), { votes: increment(1) });
+                await ud(d(db, "youtubers", channelId), { votes: inc(1) });
             } catch (err) {
                 console.error(err);
             }
