@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PK Craft Hub | Live Voting Directory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f19; }
+        .text-gradient { background: linear-gradient(135deg, #ff0055 0%, #ff5500 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    </style>
+</head>
+<body class="text-slate-200 min-h-screen flex flex-col selection:bg-red-500 selection:text-white">
+
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-gradient-to-tr from-red-600 to-orange-500 p-2 rounded-xl text-white shadow-lg">
+                    <i class="fa-solid fa-cubes text-xl"></i>
+                </div>
+                <span class="font-extrabold text-xl tracking-tight text-white">PK<span class="text-red-500">Craft</span>Hub</span>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <button id="btn-register-channel" onclick="openRegisterModal()" class="hidden items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-sm font-semibold transition-all border border-slate-700/50">
+                    <i class="fa-solid fa-square-plus text-red-500"></i> Register Channel
+                </button>
+
+                <button id="btn-login" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-sm font-bold transition-all text-white">
+                    <i class="fa-brands fa-google"></i> Login
+                </button>
+
+                <div id="user-profile-badge" class="hidden items-center gap-3 bg-slate-800/80 p-1.5 pr-4 rounded-full border border-slate-700/50">
+                    <img id="user-avatar" src="" alt="User Avatar" class="w-8 h-8 rounded-full bg-slate-700 border border-slate-600">
+                    <div class="text-xs">
+                        <p id="user-display-name" class="font-bold text-slate-200">Loading...</p>
+                        <p id="user-vote-status" class="text-emerald-400 font-medium flex items-center gap-1"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <div class="text-center max-w-2xl mx-auto mb-12">
+            <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-white mb-4">
+                Pakistani Minecraft <br><span class="text-gradient">Creator Leaderboard</span>
+            </h1>
+            <p class="text-slate-400 text-sm sm:text-base">
+                Real-time voting powered by Google Authentication. Safe, direct, and un-bottable.
+            </p>
+        </div>
+
+        <div id="creator-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="col-span-full text-center py-12 text-slate-500">
+                <i class="fa-solid fa-circle-notch animate-spin text-2xl mb-2 text-red-500"></i>
+                <p>Syncing Live Firestore Leaderboards...</p>
+            </div>
+        </div>
+    </main>
+
+    <div id="register-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+            <button onclick="closeRegisterModal()" class="absolute right-4 top-4 text-slate-500 hover:text-slate-300">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            
+            <div class="mb-5">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <i class="fa-brands fa-youtube text-red-500"></i> Connect Creator Profile
+                </h3>
+                <p class="text-slate-400 text-xs mt-1">Your Google Channel Account identity will auto-bind to prevent imitation profiles.</p>
+            </div>
+
+            <form id="channel-registration-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Minecraft IGN (In-Game Name)</label>
+                    <input type="text" id="reg-ign" required placeholder="e.g., GetBetterLt3" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Primary Focus / Playstyle</label>
+                    <select id="reg-style" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-red-500 text-slate-300">
+                        <option value="Java / Lifesteal">Java / Lifesteal SMP</option>
+                        <option value="Bedrock / Factions">Bedrock / Factions</option>
+                        <option value="Speedrunner">Speedrunner</option>
+                        <option value="PvP Minigames">PvP Minigames</option>
+                    </select>
+                </div>
+                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs text-slate-400">
+                    <i class="fa-brands fa-youtube text-red-500 mr-1"></i> Public Channel Name and Logo will read automatically from your logged-in session profile data.
+                </div>
+                <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-orange-500 text-white font-bold py-3 rounded-xl shadow-lg text-sm">
+                    Link and Publish Channel
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="border-t border-slate-900 bg-slate-950/60 py-6 text-center text-xs text-slate-600">
+        &copy; 2026 PKCraftHub. Not affiliated with Mojang Studios or Microsoft.
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Integrated pgcwebsite configuration block
+        const firebaseConfig = {
+            apiKey: "AIzaSyAu31P9_fYebyc05OH31K6sxZ1POgeYjVE",
+            authDomain: "pgcwebsite.firebaseapp.com",
+            projectId: "pgcwebsite",
+            storageBucket: "pgcwebsite.firebasestorage.app",
+            messagingSenderId: "335632389340",
+            appId: "1:335632389340:web:d21defb70d032c934a5019"
+        };
+
+        // Init App Framework
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const googleProvider = new GoogleAuthProvider();
+
+        googleProvider.addScope('https://www.googleapis.com/auth/youtube.readonly');
+
+        let currentUserData = null;
+
+        // Login Handler
+        document.getElementById('btn-login').addEventListener('click', async () => {
+            try {
+                await signInWithPopup(auth, googleProvider);
+            } catch (err) {
+                console.error("Authentication Error Details: ", err);
+                alert("Sign-In Operation Aborted.");
+            }
+        });
+
+        // Track Authentication Cycle Status
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                document.getElementById('btn-login').classList.add('hidden');
+                document.getElementById('user-profile-badge').classList.remove('hidden');
+                document.getElementById('btn-register-channel').classList.remove('hidden');
+                document.getElementById('btn-register-channel').classList.add('flex');
+                
+                document.getElementById('user-avatar').src = user.photoURL;
+                document.getElementById('user-display-name').textContent = user.displayName;
+
+                const userRef = doc(db, "users", user.uid);
+                const userSnap = await getDoc(userRef);
+
+                if (!userSnap.exists()) {
+                    currentUserData = {
+                        uid: user.uid,
+                        displayName: user.displayName,
+                        photoURL: user.photoURL,
+                        role: "standard", 
+                        votesLeft: 1,
+                        ownedChannelId: null
+                    };
+                    await setDoc(userRef, currentUserData);
+                } else {
+                    currentUserData = userSnap.data();
+                }
+
+                document.getElementById('user-vote-status').innerHTML = `
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse"></span> 
+                    ${currentUserData.role.toUpperCase()} (${currentUserData.votesLeft} Votes Left)
+                `;
+            } else {
+                document.getElementById('btn-login').classList.remove('hidden');
+                document.getElementById('user-profile-badge').classList.add('hidden');
+                document.getElementById('btn-register-channel').classList.add('hidden');
+                document.getElementById('btn-register-channel').classList.remove('flex');
+                currentUserData = null;
+            }
+        });
+
+        // Real-Time Syncing Directory Fetch
+        onSnapshot(collection(db, "youtubers"), (snapshot) => {
+            const grid = document.getElementById('creator-grid');
+            if (snapshot.empty) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500">No channels registered yet. Be the first!</div>`;
+                return;
+            }
+
+            let creatorsList = [];
+            snapshot.forEach(doc => creatorsList.push({ id: doc.id, ...doc.data() }));
+            creatorsList.sort((a, b) => b.votes - a.votes);
+
+            grid.innerHTML = '';
+            creatorsList.forEach((creator, idx) => {
+                const isSelfOwned = currentUserData && currentUserData.ownedChannelId === creator.id;
+                
+                grid.innerHTML += `
+                    <div class="border border-slate-800/80 bg-slate-900/30 rounded-2xl p-5 flex flex-col justify-between relative">
+                        <div>
+                            <div class="flex items-center gap-4 mb-4">
+                                <img src="${creator.logoUrl}" alt="Logo" class="w-14 h-14 rounded-xl border border-slate-700 bg-slate-800 p-1 object-cover">
+                                <div>
+                                    <h4 class="font-bold text-white text-base">${creator.name}</h4>
+                                    <p class="text-xs text-slate-500">IGN: <span class="text-slate-300 font-mono">${creator.ign}</span></p>
+                                </div>
+                            </div>
+                            <div class="bg-slate-950/60 rounded-xl p-3 mb-4 text-xs">
+                                <span class="text-slate-500 font-bold block uppercase tracking-wider text-[10px] mb-1">Playstyle Focus</span>
+                                <span class="px-2 py-0.5 bg-slate-800 rounded text-slate-300 font-medium">${creator.style}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between pt-2 border-t border-slate-800/60">
+                            <div>
+                                <span class="text-[10px] uppercase tracking-wider text-slate-500 block font-bold">Votes</span>
+                                <span class="text-lg font-black text-white"><i class="fa-solid fa-heart text-red-500"></i> ${creator.votes}</span>
+                            </div>
+                            ${isSelfOwned ? `
+                                <button disabled class="bg-slate-800 text-slate-500 px-4 py-2 rounded-xl text-xs font-bold border border-slate-700 cursor-not-allowed">
+                                    <i class="fa-solid fa-ban"></i> Self Vote Blocked
+                                </button>
+                            ` : `
+                                <button onclick="window.castVote('${creator.id}')" class="bg-gradient-to-r from-red-600/20 to-orange-500/20 text-red-400 hover:text-white hover:from-red-600 hover:to-orange-500 px-5 py-2 rounded-xl text-xs font-bold transition-all border border-red-500/20 hover:border-transparent">
+                                    Upvote
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                `;
+            });
+        });
+
+        // Channel Registration
+        document.getElementById('channel-registration-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!auth.currentUser || !currentUserData) return;
+
+            if (currentUserData.ownedChannelId) {
+                alert("Your account is already linked to a registered profile card entry.");
+                return;
+            }
+
+            const ign = document.getElementById('reg-ign').value;
+            const style = document.getElementById('reg-style').value;
+            const channelId = `ch_${auth.currentUser.uid}`;
+            
+            try {
+                await setDoc(doc(db, "youtubers", channelId), {
+                    name: auth.currentUser.displayName, 
+                    logoUrl: auth.currentUser.photoURL, 
+                    ign: ign,
+                    style: style,
+                    votes: 0,
+                    ownerUid: auth.currentUser.uid
+                });
+
+                await updateDoc(doc(db, "users", auth.currentUser.uid), {
+                    ownedChannelId: channelId
+                });
+
+                currentUserData.ownedChannelId = channelId;
+                closeRegisterModal();
+                alert("Verified Creator Registry Profile Document Successfully Created!");
+            } catch (err) {
+                console.error(err);
+                alert("Database initialization structural write permissions rejected.");
+            }
+        });
+
+        // Voting Mechanism
+        window.castVote = async function(channelId) {
+            if (!auth.currentUser || !currentUserData) {
+                alert("Please log in with Google to cast votes.");
+                return;
+            }
+
+            if (currentUserData.votesLeft <= 0) {
+                alert("No structural vote allocation token allocations remain inside your user document schema profile tracking.");
+                return;
+            }
+
+            if (currentUserData.ownedChannelId === channelId) {
+                alert("Integrity Protocol Fault: Self-targeted points manipulation configurations are blocked.");
+                return;
+            }
+
+            try {
+                await updateDoc(doc(db, "users", auth.currentUser.uid), {
+                    votesLeft: increment(-1)
+                });
+                currentUserData.votesLeft -= 1;
+
+                await updateDoc(doc(db, "youtubers", channelId), {
+                    votes: increment(1)
+                });
+
+                document.getElementById('user-vote-status').innerHTML = `
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse"></span> 
+                    ${currentUserData.role.toUpperCase()} (${currentUserData.votesLeft} Votes Left)
+                `;
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        window.openRegisterModal = function() { document.getElementById('register-modal').classList.remove('hidden'); }
+        window.closeRegisterModal = function() { document.getElementById('register-modal').classList.add('hidden'); }
+    </script>
+</body>
+</html>
