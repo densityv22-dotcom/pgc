@@ -6,34 +6,51 @@
     <title>PK Craft Hub | Live Voting Directory</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f19; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f19; overflow-x: hidden; }
         .text-gradient { background: linear-gradient(135deg, #ff0055 0%, #ff5500 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        /* Premium custom smooth transition animations */
+        .creator-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .creator-card:hover { transform: translateY(-8px) scale(1.02); }
+        
+        /* Shimmer Loading Animation */
+        .shimmer {
+            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+            background-size: 200% 100%;
+            animation: loading-shimmer 1.5s infinite linear;
+        }
+        @keyframes loading-shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
     </style>
 </head>
 <body class="text-slate-200 min-h-screen flex flex-col selection:bg-red-500 selection:text-white">
 
-    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-40">
+    <!-- Header / Navbar -->
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-40 transition-all">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="bg-gradient-to-tr from-red-600 to-orange-500 p-2 rounded-xl text-white shadow-lg">
-                    <i class="fa-solid fa-cubes text-xl"></i>
+            <div class="flex items-center gap-3 animate__animated animate__fadeInLeft">
+                <div class="bg-gradient-to-tr from-red-600 to-orange-500 p-2 rounded-xl text-white shadow-lg shadow-red-600/30">
+                    <i class="fa-solid fa-cubes text-xl animate-pulse"></i>
                 </div>
                 <span class="font-extrabold text-xl tracking-tight text-white">PK<span class="text-red-500">Craft</span>Hub</span>
             </div>
             
-            <div class="flex items-center gap-4">
-                <button id="btn-register-channel" onclick="openRegisterModal()" class="hidden items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-sm font-semibold transition-all border border-slate-700/50">
+            <div class="flex items-center gap-4 animate__animated animate__fadeInRight">
+                <button id="btn-register-channel" onclick="openRegisterModal()" class="hidden items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-sm font-semibold transition-all border border-slate-700/50 hover:border-red-500/50">
                     <i class="fa-solid fa-square-plus text-red-500"></i> Register Channel
                 </button>
 
-                <button id="btn-login" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-sm font-bold transition-all text-white">
-                    <i class="fa-brands fa-google"></i> Login
+                <button id="btn-login" class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-sm font-bold transition-all text-white shadow-lg shadow-red-600/20 active:scale-95">
+                    <i class="fa-brands fa-google"></i> Login with Google
                 </button>
 
-                <div id="user-profile-badge" class="hidden items-center gap-3 bg-slate-800/80 p-1.5 pr-4 rounded-full border border-slate-700/50">
-                    <img id="user-avatar" src="" alt="User Avatar" class="w-8 h-8 rounded-full bg-slate-700 border border-slate-600">
+                <div id="user-profile-badge" class="hidden items-center gap-3 bg-slate-800/80 p-1.5 pr-4 rounded-full border border-slate-700/50 shadow-inner">
+                    <img id="user-avatar" src="" alt="User Avatar" class="w-8 h-8 rounded-full bg-slate-700 border border-slate-600 shadow">
                     <div class="text-xs">
                         <p id="user-display-name" class="font-bold text-slate-200">Loading...</p>
                         <p id="user-vote-status" class="text-emerald-400 font-medium flex items-center gap-1"></p>
@@ -43,9 +60,12 @@
         </div>
     </header>
 
+    <!-- Main Content Arena -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-        <div class="text-center max-w-2xl mx-auto mb-12">
+        <!-- Hero Section -->
+        <div class="text-center max-w-2xl mx-auto mb-16 animate__animated animate__fadeIn">
+            <span class="bg-red-500/10 text-red-400 text-xs font-bold px-3 py-1.5 rounded-full border border-red-500/20 tracking-wider uppercase inline-block mb-3">Community Hub v2.0</span>
             <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-white mb-4">
                 Pakistani Minecraft <br><span class="text-gradient">Creator Leaderboard</span>
             </h1>
@@ -54,18 +74,36 @@
             </p>
         </div>
 
-        <div id="creator-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="col-span-full text-center py-12 text-slate-500">
-                <i class="fa-solid fa-circle-notch animate-spin text-2xl mb-2 text-red-500"></i>
-                <p>Syncing Live Firestore Leaderboards...</p>
+        <!-- Search Bar Utility Box -->
+        <div class="max-w-md mx-auto mb-12 animate__animated animate__fadeInUp">
+            <div class="relative group">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-base transition-colors group-focus-within:text-red-500"></i>
+                <input type="text" id="search-bar" placeholder="Search YouTuber or In-game Name..." class="w-full bg-slate-900/60 backdrop-blur border border-slate-800 rounded-2xl pl-12 pr-4 py-3.5 text-sm text-white focus:outline-none focus:border-red-500/80 transition-all placeholder:text-slate-600 shadow-xl">
             </div>
+        </div>
+
+        <!-- 🏆 TOP 3 PODIUM HERO SHOWCASE -->
+        <div id="podium-container" class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-16 items-end">
+            <!-- Dynamic Podium items render here -->
+        </div>
+
+        <div class="border-t border-slate-900/80 my-8"></div>
+
+        <!-- The Rest of the Creator Grid -->
+        <h3 class="text-lg font-bold text-slate-400 mb-6 flex items-center gap-2 animate__animated animate__fadeIn"><i class="fa-solid fa-list-ol text-red-500"></i> Full Directory Standings</h3>
+        <div id="creator-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Loading Skeleton Blocks Initially -->
+            <div class="shimmer h-48 rounded-2xl border border-slate-800/50"></div>
+            <div class="shimmer h-48 rounded-2xl border border-slate-800/50"></div>
+            <div class="shimmer h-48 rounded-2xl border border-slate-800/50"></div>
         </div>
     </main>
 
-    <div id="register-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-            <button onclick="closeRegisterModal()" class="absolute right-4 top-4 text-slate-500 hover:text-slate-300">
-                <i class="fa-solid fa-xmark text-lg"></i>
+    <!-- Channel Registration Modal -->
+    <div id="register-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden transition-opacity duration-300">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative animate__animated animate__zoomIn animate__faster">
+            <button onclick="closeRegisterModal()" class="absolute right-5 top-5 text-slate-500 hover:text-slate-300 transition-colors">
+                <i class="fa-solid fa-xmark text-xl"></i>
             </button>
             
             <div class="mb-5">
@@ -92,23 +130,24 @@
                 <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs text-slate-400">
                     <i class="fa-brands fa-youtube text-red-500 mr-1"></i> Public Channel Name and Logo will read automatically from your logged-in session profile data.
                 </div>
-                <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-orange-500 text-white font-bold py-3 rounded-xl shadow-lg text-sm">
+                <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-orange-500 text-white font-bold py-3.5 rounded-xl shadow-lg hover:brightness-110 active:scale-[0.99] transition-all text-sm">
                     Link and Publish Channel
                 </button>
             </form>
         </div>
     </div>
 
-    <footer class="border-t border-slate-900 bg-slate-950/60 py-6 text-center text-xs text-slate-600">
+    <!-- Footer -->
+    <footer class="border-t border-slate-900 bg-slate-950/60 py-6 text-center text-xs text-slate-600 mt-12">
         &copy; 2026 PKCraftHub. Not affiliated with Mojang Studios or Microsoft.
     </footer>
 
+    <!-- Core App Logic Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Integrated pgcwebsite configuration block
         const firebaseConfig = {
             apiKey: "AIzaSyAu31P9_fYebyc05OH31K6sxZ1POgeYjVE",
             authDomain: "pgcwebsite.firebaseapp.com",
@@ -118,34 +157,27 @@
             appId: "1:335632389340:web:d21defb70d032c934a5019"
         };
 
-        // Init App Framework
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
         const googleProvider = new GoogleAuthProvider();
-
         googleProvider.addScope('https://www.googleapis.com/auth/youtube.readonly');
 
         let currentUserData = null;
+        let globalCreatorsCache = [];
 
-        // Login Handler
+        // Login
         document.getElementById('btn-login').addEventListener('click', async () => {
-            try {
-                await signInWithPopup(auth, googleProvider);
-            } catch (err) {
-                console.error("Authentication Error Details: ", err);
-                alert("Sign-In Operation Aborted.");
-            }
+            try { await signInWithPopup(auth, googleProvider); } catch (err) { console.error(err); }
         });
 
-        // Track Authentication Cycle Status
+        // Authentication State Listener
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 document.getElementById('btn-login').classList.add('hidden');
                 document.getElementById('user-profile-badge').classList.remove('hidden');
                 document.getElementById('btn-register-channel').classList.remove('hidden');
                 document.getElementById('btn-register-channel').classList.add('flex');
-                
                 document.getElementById('user-avatar').src = user.photoURL;
                 document.getElementById('user-display-name').textContent = user.displayName;
 
@@ -153,84 +185,154 @@
                 const userSnap = await getDoc(userRef);
 
                 if (!userSnap.exists()) {
-                    currentUserData = {
-                        uid: user.uid,
-                        displayName: user.displayName,
-                        photoURL: user.photoURL,
-                        role: "standard", 
-                        votesLeft: 1,
-                        ownedChannelId: null
-                    };
+                    currentUserData = { uid: user.uid, displayName: user.displayName, photoURL: user.photoURL, role: "standard", votesLeft: 1, ownedChannelId: null };
                     await setDoc(userRef, currentUserData);
                 } else {
                     currentUserData = userSnap.data();
                 }
-
-                document.getElementById('user-vote-status').innerHTML = `
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse"></span> 
-                    ${currentUserData.role.toUpperCase()} (${currentUserData.votesLeft} Votes Left)
-                `;
+                updateVoteBadgeUI();
             } else {
                 document.getElementById('btn-login').classList.remove('hidden');
                 document.getElementById('user-profile-badge').classList.add('hidden');
                 document.getElementById('btn-register-channel').classList.add('hidden');
-                document.getElementById('btn-register-channel').classList.remove('flex');
                 currentUserData = null;
             }
+            buildLeaderboardUI(); 
         });
 
-        // Real-Time Syncing Directory Fetch
+        function updateVoteBadgeUI() {
+            if (!currentUserData) return;
+            document.getElementById('user-vote-status').innerHTML = `
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse"></span> 
+                ${currentUserData.role.toUpperCase()} (${currentUserData.votesLeft} Left)
+            `;
+        }
+
+        // Live Realtime Dynamic Syncing Engine
         onSnapshot(collection(db, "youtubers"), (snapshot) => {
+            globalCreatorsCache = [];
+            snapshot.forEach(doc => globalCreatorsCache.push({ id: doc.id, ...doc.data() }));
+            buildLeaderboardUI();
+        });
+
+        // Search engine keyup hook
+        document.getElementById('search-bar').addEventListener('input', () => {
+            buildLeaderboardUI();
+        });
+
+        // Main Rendering Algorithm: **Always ensures top votes go directly to the top podium**
+        function buildLeaderboardUI() {
             const grid = document.getElementById('creator-grid');
-            if (snapshot.empty) {
-                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500">No channels registered yet. Be the first!</div>`;
+            const podiumContainer = document.getElementById('podium-container');
+            const searchTerm = document.getElementById('search-bar').value.toLowerCase();
+
+            // Filter down matching entries
+            let filtered = globalCreatorsCache.filter(c => 
+                c.name.toLowerCase().includes(searchTerm) || 
+                c.ign.toLowerCase().includes(searchTerm)
+            );
+
+            // SORT FORCE: Highest values index 0
+            filtered.sort((a, b) => b.votes - a.votes);
+
+            if (filtered.length === 0) {
+                podiumContainer.innerHTML = '';
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500">No channels match criteria or are registered.</div>`;
                 return;
             }
 
-            let creatorsList = [];
-            snapshot.forEach(doc => creatorsList.push({ id: doc.id, ...doc.data() }));
-            creatorsList.sort((a, b) => b.votes - a.votes);
+            // Extract Top 3 for custom 3D design podium slots
+            let top3 = filtered.slice(0, 3);
+            let others = filtered.slice(3);
 
-            grid.innerHTML = '';
-            creatorsList.forEach((creator, idx) => {
+            // Render Podium Slots (Rank 2, Rank 1, Rank 3 configuration layout visually)
+            let podiumHtml = ["", "", ""];
+            
+            // Re-order top elements specifically to center Rank #1
+            let orderMap = [1, 0, 2]; // index 0 goes to middle, index 1 goes to left, index 2 goes to right
+            
+            top3.forEach((creator, index) => {
                 const isSelfOwned = currentUserData && currentUserData.ownedChannelId === creator.id;
+                let rankLabel = index + 1;
+                let medalColor = "bg-amber-500 text-slate-950"; // Rank 1 Gold
+                let cardGlow = "border-amber-500/40 bg-gradient-to-b from-amber-950/20 to-slate-900/40 md:scale-105 z-10 shadow-2xl shadow-amber-500/5";
                 
-                grid.innerHTML += `
-                    <div class="border border-slate-800/80 bg-slate-900/30 rounded-2xl p-5 flex flex-col justify-between relative">
-                        <div>
-                            <div class="flex items-center gap-4 mb-4">
-                                <img src="${creator.logoUrl}" alt="Logo" class="w-14 h-14 rounded-xl border border-slate-700 bg-slate-800 p-1 object-cover">
-                                <div>
-                                    <h4 class="font-bold text-white text-base">${creator.name}</h4>
-                                    <p class="text-xs text-slate-500">IGN: <span class="text-slate-300 font-mono">${creator.ign}</span></p>
-                                </div>
-                            </div>
-                            <div class="bg-slate-950/60 rounded-xl p-3 mb-4 text-xs">
-                                <span class="text-slate-500 font-bold block uppercase tracking-wider text-[10px] mb-1">Playstyle Focus</span>
-                                <span class="px-2 py-0.5 bg-slate-800 rounded text-slate-300 font-medium">${creator.style}</span>
-                            </div>
+                if (index === 1) { // Rank 2 Silver
+                    medalColor = "bg-slate-300 text-slate-950";
+                    cardGlow = "border-slate-400/20 bg-slate-900/40";
+                } else if (index === 2) { // Rank 3 Bronze
+                    medalColor = "bg-amber-700 text-white";
+                    cardGlow = "border-amber-800/20 bg-slate-900/40";
+                }
+
+                let slotHtml = `
+                    <div class="border ${cardGlow} rounded-3xl p-6 flex flex-col justify-between items-center relative overflow-hidden animate__animated animate__fadeInUp">
+                        <div class="absolute top-3 left-3 ${medalColor} rounded-full font-black text-xs w-6 h-6 flex items-center justify-center shadow">#${rankLabel}</div>
+                        <div class="text-center mt-2 flex flex-col items-center">
+                            <img src="${creator.logoUrl}" alt="Logo" class="w-16 h-16 rounded-2xl border-2 border-slate-700 bg-slate-800 p-1 object-cover shadow-lg">
+                            <h4 class="font-extrabold text-white text-lg mt-3">${creator.name}</h4>
+                            <p class="text-xs text-slate-500">IGN: <span class="text-red-400 font-mono font-bold">${creator.ign}</span></p>
+                            <span class="mt-2 px-2.5 py-0.5 text-[11px] font-bold bg-slate-800/80 border border-slate-700 text-slate-300 rounded-md block">${creator.style}</span>
                         </div>
-                        <div class="flex items-center justify-between pt-2 border-t border-slate-800/60">
-                            <div>
-                                <span class="text-[10px] uppercase tracking-wider text-slate-500 block font-bold">Votes</span>
-                                <span class="text-lg font-black text-white"><i class="fa-solid fa-heart text-red-500"></i> ${creator.votes}</span>
+                        <div class="w-full border-t border-slate-800/60 mt-4 pt-4 flex items-center justify-between">
+                            <div class="text-left">
+                                <span class="text-[9px] uppercase tracking-wider text-slate-500 font-bold block">Score Balance</span>
+                                <span class="text-lg font-black text-white"><i class="fa-solid fa-fire text-orange-500 mr-1 animate-pulse"></i>${creator.votes}</span>
                             </div>
                             ${isSelfOwned ? `
-                                <button disabled class="bg-slate-800 text-slate-500 px-4 py-2 rounded-xl text-xs font-bold border border-slate-700 cursor-not-allowed">
-                                    <i class="fa-solid fa-ban"></i> Self Vote Blocked
-                                </button>
+                                <button disabled class="bg-slate-800 text-slate-500 px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-700 cursor-not-allowed">Blocked</button>
                             ` : `
-                                <button onclick="window.castVote('${creator.id}')" class="bg-gradient-to-r from-red-600/20 to-orange-500/20 text-red-400 hover:text-white hover:from-red-600 hover:to-orange-500 px-5 py-2 rounded-xl text-xs font-bold transition-all border border-red-500/20 hover:border-transparent">
-                                    Upvote
-                                </button>
+                                <button onclick="window.castVote('${creator.id}')" class="bg-gradient-to-r from-red-600 to-orange-500 text-white px-4 py-2 rounded-xl text-xs font-black shadow-lg hover:brightness-110 active:scale-95 transition-all">VOTE</button>
+                            `}
+                        </div>
+                    </div>
+                `;
+                
+                if (top3.length === 3) {
+                    podiumHtml[orderMap[index]] = slotHtml;
+                } else {
+                    podiumHtml[index] = slotHtml;
+                }
+            });
+
+            podiumContainer.innerHTML = podiumHtml.join('');
+
+            // Render Remaining Directory Items Below Podium
+            grid.innerHTML = '';
+            if (others.length === 0 && top3.length > 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-4 text-slate-600 text-xs">End of standings leaderboard registry records.</div>`;
+            }
+
+            others.forEach((creator, index) => {
+                const isSelfOwned = currentUserData && currentUserData.ownedChannelId === creator.id;
+                let actualRank = index + 4;
+                
+                grid.innerHTML += `
+                    <div class="creator-card border border-slate-800/80 bg-slate-900/20 rounded-2xl p-5 flex items-center justify-between relative animate__animated animate__fadeInUp">
+                        <div class="flex items-center gap-4">
+                            <span class="font-black text-slate-600 text-sm w-5 text-center">#${actualRank}</span>
+                            <img src="${creator.logoUrl}" alt="Logo" class="w-12 h-12 rounded-xl border border-slate-700 bg-slate-800 p-0.5 object-cover">
+                            <div>
+                                <h4 class="font-bold text-white text-sm">${creator.name}</h4>
+                                <p class="text-[11px] text-slate-400 font-mono">IGN: ${creator.ign} • <span class="text-slate-500">${creator.style}</span></p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="text-right">
+                                <span class="text-sm font-black text-slate-200 block"><i class="fa-solid fa-heart text-red-500 text-xs mr-1"></i>${creator.votes}</span>
+                            </div>
+                            ${isSelfOwned ? `
+                                <button disabled class="bg-slate-800 text-slate-600 px-2.5 py-1.5 rounded-lg text-[10px] font-bold cursor-not-allowed">Locked</button>
+                            ` : `
+                                <button onclick="window.castVote('${creator.id}')" class="bg-slate-800 hover:bg-red-600 text-slate-300 hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all border border-slate-700/50 hover:border-transparent">UPVOTE</button>
                             `}
                         </div>
                     </div>
                 `;
             });
-        });
+        }
 
-        // Channel Registration
+        // Channel Registration Pipeline Form Submit
         document.getElementById('channel-registration-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!auth.currentUser || !currentUserData) return;
@@ -254,20 +356,15 @@
                     ownerUid: auth.currentUser.uid
                 });
 
-                await updateDoc(doc(db, "users", auth.currentUser.uid), {
-                    ownedChannelId: channelId
-                });
-
+                await updateDoc(doc(db, "users", auth.currentUser.uid), { ownedChannelId: channelId });
                 currentUserData.ownedChannelId = channelId;
                 closeRegisterModal();
-                alert("Verified Creator Registry Profile Document Successfully Created!");
             } catch (err) {
                 console.error(err);
-                alert("Database initialization structural write permissions rejected.");
             }
         });
 
-        // Voting Mechanism
+        // Upvote Function
         window.castVote = async function(channelId) {
             if (!auth.currentUser || !currentUserData) {
                 alert("Please log in with Google to cast votes.");
@@ -275,29 +372,21 @@
             }
 
             if (currentUserData.votesLeft <= 0) {
-                alert("No structural vote allocation token allocations remain inside your user document schema profile tracking.");
+                alert("You are out of votes for this cycle!");
                 return;
             }
 
             if (currentUserData.ownedChannelId === channelId) {
-                alert("Integrity Protocol Fault: Self-targeted points manipulation configurations are blocked.");
+                alert("You cannot upvote your own channel entry!");
                 return;
             }
 
             try {
-                await updateDoc(doc(db, "users", auth.currentUser.uid), {
-                    votesLeft: increment(-1)
-                });
+                await updateDoc(doc(db, "users", auth.currentUser.uid), { votesLeft: increment(-1) });
                 currentUserData.votesLeft -= 1;
+                updateVoteBadgeUI();
 
-                await updateDoc(doc(db, "youtubers", channelId), {
-                    votes: increment(1)
-                });
-
-                document.getElementById('user-vote-status').innerHTML = `
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse"></span> 
-                    ${currentUserData.role.toUpperCase()} (${currentUserData.votesLeft} Votes Left)
-                `;
+                await updateDoc(doc(db, "youtubers", channelId), { votes: increment(1) });
             } catch (err) {
                 console.error(err);
             }
