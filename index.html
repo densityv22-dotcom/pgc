@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PGC Community | Live Voting Directory</title>
+    <title>PK Craft Hub | Live Voting Directory</title>
     
     <meta name="google-site-verification" content="rZ6D-OMLgqRw6SOFJanKTfowRrYiSUWr2CWue3IObQ4" />
 
@@ -37,7 +37,7 @@
                 <div class="bg-gradient-to-tr from-red-600 to-orange-500 p-2 rounded-xl text-white shadow-lg shadow-red-600/30">
                     <i class="fa-solid fa-cubes text-xl animate-pulse"></i>
                 </div>
-                <span class="font-extrabold text-xl tracking-tight text-white">PGC<span class="text-red-500"> Community</span></span>
+                <span class="font-extrabold text-xl tracking-tight text-white">PK<span class="text-red-500">Craft</span>Hub</span>
             </div>
             
             <div class="flex items-center gap-4 animate__animated animate__fadeInRight">
@@ -130,7 +130,7 @@
     </div>
 
     <footer class="border-t border-slate-900 bg-slate-950/60 py-6 text-center text-xs text-slate-600 mt-12">
-        &copy; 2026 PGC Community. Not affiliated with Mojang Studios or Microsoft.
+        &copy; 2026 PKCraftHub. Not affiliated with Mojang Studios or Microsoft.
     </footer>
 
     <script type="module">
@@ -156,13 +156,13 @@
         let currentUserData = null;
         let globalCreatorsCache = [];
 
-        // Login Handler
+        // Login
         document.getElementById('btn-login').addEventListener('click', async () => {
             try { 
                 await signInWithPopup(auth, googleProvider); 
             } catch (err) { 
-                console.error("Authentication Error:", err);
-                alert("Login Error: Make sure your browser isn't blocking popups and your domain is whitelisted in Firebase!");
+                console.error(err); 
+                alert("Login failed! Check your popup blockers or Google console setups.");
             }
         });
 
@@ -193,8 +193,8 @@
                     document.getElementById('btn-register-channel').classList.add('hidden');
                     currentUserData = null;
                 }
-            } catch (e) {
-                console.error("Auth state handling error:", e);
+            } catch (err) {
+                console.error("Auth process issue: ", err);
             }
             buildLeaderboardUI(); 
         });
@@ -207,25 +207,27 @@
             `;
         }
 
-        // Realtime Synchronizer with safe fallback if empty
+        // Live Realtime Dynamic Syncing Engine
         try {
             onSnapshot(collection(db, "youtubers"), (snapshot) => {
                 globalCreatorsCache = [];
                 snapshot.forEach(doc => globalCreatorsCache.push({ id: doc.id, ...doc.data() }));
                 buildLeaderboardUI();
             }, (error) => {
-                console.error("Firestore loading error:", error);
-                buildLeaderboardUI(); // Fallback to break shimmers if firestore rejects connection
+                console.error("Firestore listening canceled:", error);
+                buildLeaderboardUI();
             });
         } catch(e) {
-            console.error("Snapshot setup failure:", e);
+            console.error(e);
             buildLeaderboardUI();
         }
 
+        // Search engine keyup hook
         document.getElementById('search-bar').addEventListener('input', () => {
             buildLeaderboardUI();
         });
 
+        // Main Rendering Algorithm
         function buildLeaderboardUI() {
             const grid = document.getElementById('creator-grid');
             const podiumContainer = document.getElementById('podium-container');
@@ -240,7 +242,7 @@
 
             if (filtered.length === 0) {
                 podiumContainer.innerHTML = '';
-                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500 bg-slate-900/10 rounded-2xl border border-slate-800/40 font-medium">No channels match criteria or are registered yet. Click "Register Channel" to be the first!</div>`;
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500 font-medium bg-slate-900/10 rounded-2xl border border-slate-800/40">No channels match criteria or are registered. Click "Register Channel" to start!</div>`;
                 return;
             }
 
@@ -275,7 +277,7 @@
                         <div class="w-full border-t border-slate-800/60 mt-4 pt-4 flex items-center justify-between">
                             <div class="text-left">
                                 <span class="text-[9px] uppercase tracking-wider text-slate-500 font-bold block">Score Balance</span>
-                                <span class="text-lg font-black text-white"><i class="fa-solid fa-fire text-orange-500 mr-1"></i>${creator.votes || 0}</span>
+                                <span class="text-lg font-black text-white"><i class="fa-solid fa-fire text-orange-500 mr-1 animate-pulse"></i>${creator.votes || 0}</span>
                             </div>
                             ${isSelfOwned ? `
                                 <button disabled class="bg-slate-800 text-slate-500 px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-700 cursor-not-allowed">Blocked</button>
@@ -295,6 +297,10 @@
 
             podiumContainer.innerHTML = podiumHtml.join('');
             grid.innerHTML = '';
+            
+            if (others.length === 0 && top3.length > 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-4 text-slate-600 text-xs">End of standings leaderboard registry records.</div>`;
+            }
 
             others.forEach((creator, index) => {
                 const isSelfOwned = currentUserData && currentUserData.ownedChannelId === creator.id;
