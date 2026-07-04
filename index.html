@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PK Craft Hub | Live Voting Directory</title>
     
-    <!-- Google Site Verification Link -->
     <meta name="google-site-verification" content="rZ6D-OMLgqRw6SOFJanKTfowRrYiSUWr2CWue3IObQ4" />
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -34,7 +33,6 @@
 </head>
 <body class="text-slate-200 min-h-screen flex flex-col selection:bg-red-500 selection:text-white">
 
-    <!-- Header / Navbar -->
     <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-40 transition-all">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3 animate__animated animate__fadeInLeft">
@@ -45,7 +43,6 @@
             </div>
             
             <div class="flex items-center gap-6 animate__animated animate__fadeInRight">
-                <!-- Bidirectional Navigation Menu Links -->
                 <nav class="flex items-center gap-6">
                     <a href="index.html" class="text-sm font-bold text-red-500 border-b-2 border-red-500 pb-1">Leaderboard</a>
                     <a href="videos.html" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Trending Videos</a>
@@ -70,10 +67,8 @@
         </div>
     </header>
 
-    <!-- Main Content Arena -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-        <!-- Hero Section -->
         <div class="text-center max-w-2xl mx-auto mb-16 animate__animated animate__fadeIn">
             <span class="bg-red-500/10 text-red-400 text-xs font-bold px-3 py-1.5 rounded-full border border-red-500/20 tracking-wider uppercase inline-block mb-3">Community Hub v2.0</span>
             <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-white mb-4">
@@ -84,7 +79,6 @@
             </p>
         </div>
 
-        <!-- Search Bar Utility Box -->
         <div class="max-w-md mx-auto mb-12 animate__animated animate__fadeInUp">
             <div class="relative group">
                 <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-base transition-colors group-focus-within:text-red-500"></i>
@@ -92,24 +86,19 @@
             </div>
         </div>
 
-        <!-- 🏆 TOP 3 PODIUM HERO SHOWCASE -->
         <div id="podium-container" class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-16 items-end">
-            <!-- Dynamic Podium items render here -->
-        </div>
+            </div>
 
         <div class="border-t border-slate-900/80 my-8"></div>
 
-        <!-- The Rest of the Creator Grid -->
         <h3 class="text-lg font-bold text-slate-400 mb-6 flex items-center gap-2 animate__animated animate__fadeIn"><i class="fa-solid fa-list-ol text-red-500"></i> Full Directory Standings</h3>
         <div id="creator-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Loading Skeleton Blocks Initially -->
             <div class="shimmer h-48 rounded-2xl border border-slate-800/50"></div>
             <div class="shimmer h-48 rounded-2xl border border-slate-800/50"></div>
             <div class="shimmer h-48 rounded-2xl border border-slate-800/50"></div>
         </div>
     </main>
 
-    <!-- Channel Registration Modal -->
     <div id="register-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden transition-opacity duration-300">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative animate__animated animate__zoomIn animate__faster">
             <button onclick="closeRegisterModal()" class="absolute right-5 top-5 text-slate-500 hover:text-slate-300 transition-colors">
@@ -147,19 +136,16 @@
         </div>
     </div>
 
-    <!-- Footer -->
     <footer class="border-t border-slate-900 bg-slate-950/60 py-6 text-center text-xs text-slate-600 mt-12">
         &copy; 2026 PKCraftHub. Not affiliated with Mojang Studios or Microsoft.
     </footer>
 
-    <!-- Core App Logic Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         
-        // Re-routing structural firestore setup correctly
         const firestoreImportUrl = "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        const { getFirestore: fs, collection: coll, doc: d, setDoc: sd, getDoc: gd, onSnapshot: os, updateDoc: ud, increment: inc } = await import(firestoreImportUrl);
+        const { getFirestore: fs, collection: coll, doc: d, setDoc: sd, getDoc: gd, onSnapshot: os, updateDoc: ud, deleteDoc: dd, increment: inc } = await import(firestoreImportUrl);
 
         const firebaseConfig = {
             apiKey: "AIzaSyAu31P9_fYebyc05OH31K6sxZ1POgeYjVE",
@@ -177,6 +163,7 @@
 
         let currentUserData = null;
         let globalCreatorsCache = [];
+        let isAdmin = false;
 
         // Login
         document.getElementById('btn-login').addEventListener('click', async () => {
@@ -186,37 +173,65 @@
         // Authentication State Listener
         onAuthStateChanged(auth, async (user) => {
             if (user) {
+                // Hardcoded Admin Checker Logic via client session account metadata email profile checks
+                isAdmin = (user.email && user.email.toLowerCase() === 'densityv22@gmail.com');
+
                 document.getElementById('btn-login').classList.add('hidden');
                 document.getElementById('user-profile-badge').classList.remove('hidden');
-                document.getElementById('btn-register-channel').classList.remove('hidden');
-                document.getElementById('btn-register-channel').classList.add('flex');
                 document.getElementById('user-avatar').src = user.photoURL;
                 document.getElementById('user-display-name').textContent = user.displayName;
 
                 const userRef = d(db, "users", user.uid);
-                const userSnap = await gd(userRef);
-
-                if (!userSnap.exists()) {
-                    currentUserData = { uid: user.uid, displayName: user.displayName, photoURL: user.photoURL, role: "standard", votesLeft: 1, ownedChannelId: null };
-                    await sd(userRef, currentUserData);
-                } else {
-                    currentUserData = userSnap.data();
-                }
-                updateVoteBadgeUI();
+                
+                // Switch to realtime listener for the user doc to handle channel changes
+                os(userRef, async (userSnap) => {
+                    if (!userSnap.exists()) {
+                        currentUserData = { 
+                            uid: user.uid, 
+                            displayName: user.displayName, 
+                            photoURL: user.photoURL, 
+                            role: isAdmin ? "admin" : "standard", 
+                            votesLeft: 1, 
+                            ownedChannelId: null 
+                        };
+                        await sd(userRef, currentUserData);
+                    } else {
+                        currentUserData = userSnap.data();
+                        if(isAdmin && currentUserData.role !== 'admin') {
+                            await ud(userRef, { role: "admin" });
+                            currentUserData.role = "admin";
+                        }
+                    }
+                    
+                    // Admins can always register multiple times, standard users are locked out if they already own a channel
+                    if (isAdmin || !currentUserData.ownedChannelId) {
+                        document.getElementById('btn-register-channel').classList.remove('hidden');
+                        document.getElementById('btn-register-channel').classList.add('flex');
+                    } else {
+                        document.getElementById('btn-register-channel').classList.add('hidden');
+                        document.getElementById('btn-register-channel').classList.remove('flex');
+                    }
+                    
+                    updateVoteBadgeUI();
+                    buildLeaderboardUI();
+                });
             } else {
                 document.getElementById('btn-login').classList.remove('hidden');
                 document.getElementById('user-profile-badge').classList.add('hidden');
                 document.getElementById('btn-register-channel').classList.add('hidden');
                 currentUserData = null;
+                isAdmin = false;
+                buildLeaderboardUI();
             }
-            buildLeaderboardUI(); 
         });
 
         function updateVoteBadgeUI() {
             if (!currentUserData) return;
+            const displayRole = isAdmin ? "ADMIN" : currentUserData.role.toUpperCase();
+            const displayVotes = isAdmin ? "∞" : currentUserData.votesLeft;
             document.getElementById('user-vote-status').innerHTML = `
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse"></span> 
-                ${currentUserData.role.toUpperCase()} (${currentUserData.votesLeft} Left)
+                <span class="w-1.5 h-1.5 rounded-full ${isAdmin ? 'bg-red-500' : 'bg-emerald-400'} inline-block animate-pulse"></span> 
+                ${displayRole} (${displayVotes} Left)
             `;
         }
 
@@ -270,8 +285,20 @@
                     cardGlow = "border-amber-800/20 bg-slate-900/40";
                 }
 
+                // Inject Admin Action Control Options for the Top Podium cards
+                let adminControls = "";
+                if (isAdmin) {
+                    adminControls = `
+                        <div class="absolute top-3 right-3 flex gap-1.5 z-20">
+                            <button onclick="window.adminResetVotes('${creator.id}', event)" title="Reset Card Votes" class="w-6 h-6 rounded-md bg-slate-950 text-orange-400 border border-slate-800 flex items-center justify-center hover:bg-orange-500 hover:text-white transition-all text-[10px]"><i class="fa-solid fa-rotate-left"></i></button>
+                            <button onclick="window.adminDeleteChannel('${creator.id}', event)" title="Delete Profile Card" class="w-6 h-6 rounded-md bg-slate-950 text-red-500 border border-slate-800 flex items-center justify-center hover:bg-red-600 hover:text-white transition-all text-[10px]"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    `;
+                }
+
                 let slotHtml = `
                     <div class="border ${cardGlow} rounded-3xl p-6 flex flex-col justify-between items-center relative overflow-hidden animate__animated animate__fadeInUp">
+                        ${adminControls}
                         <div class="absolute top-3 left-3 ${medalColor} rounded-full font-black text-xs w-6 h-6 flex items-center justify-center shadow">#${rankLabel}</div>
                         <div class="text-center mt-2 flex flex-col items-center">
                             <img src="${creator.logoUrl}" alt="Logo" class="w-16 h-16 rounded-2xl border-2 border-slate-700 bg-slate-800 p-1 object-cover shadow-lg">
@@ -284,7 +311,7 @@
                                 <span class="text-[9px] uppercase tracking-wider text-slate-500 font-bold block">Score Balance</span>
                                 <span class="text-lg font-black text-white"><i class="fa-solid fa-fire text-orange-500 mr-1 animate-pulse"></i>${creator.votes}</span>
                             </div>
-                            ${isSelfOwned ? `
+                            ${(isSelfOwned && !isAdmin) ? `
                                 <button disabled class="bg-slate-800 text-slate-500 px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-700 cursor-not-allowed">Blocked</button>
                             ` : `
                                 <button onclick="window.castVote('${creator.id}')" class="bg-gradient-to-r from-red-600 to-orange-500 text-white px-4 py-2 rounded-xl text-xs font-black shadow-lg hover:brightness-110 active:scale-95 transition-all">VOTE</button>
@@ -311,6 +338,17 @@
                 const isSelfOwned = currentUserData && currentUserData.ownedChannelId === creator.id;
                 let actualRank = index + 4;
                 
+                // Inject Admin Action Control Options for Standard list records
+                let adminRowControls = "";
+                if (isAdmin) {
+                    adminRowControls = `
+                        <div class="flex items-center gap-1 bg-slate-950 p-1 rounded-lg border border-slate-800/60">
+                            <button onclick="window.adminResetVotes('${creator.id}', event)" class="w-6 h-6 rounded bg-slate-900 text-orange-400 flex items-center justify-center hover:bg-orange-500 hover:text-white text-[10px] transition-all"><i class="fa-solid fa-rotate-left"></i></button>
+                            <button onclick="window.adminDeleteChannel('${creator.id}', event)" class="w-6 h-6 rounded bg-slate-900 text-red-500 flex items-center justify-center hover:bg-red-600 hover:text-white text-[10px] transition-all"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    `;
+                }
+
                 grid.innerHTML += `
                     <div class="creator-card border border-slate-800/80 bg-slate-900/20 rounded-2xl p-5 flex items-center justify-between relative animate__animated animate__fadeInUp">
                         <div class="flex items-center gap-4">
@@ -321,11 +359,12 @@
                                 <p class="text-[11px] text-slate-400 font-mono">IGN: ${creator.ign} • <span class="text-slate-500">${creator.style}</span></p>
                             </div>
                         </div>
-                        <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-3">
+                            ${adminRowControls}
                             <div class="text-right">
                                 <span class="text-sm font-black text-slate-200 block"><i class="fa-solid fa-heart text-red-500 text-xs mr-1"></i>${creator.votes}</span>
                             </div>
-                            ${isSelfOwned ? `
+                            ${(isSelfOwned && !isAdmin) ? `
                                 <button disabled class="bg-slate-800 text-slate-600 px-2.5 py-1.5 rounded-lg text-[10px] font-bold cursor-not-allowed">Locked</button>
                             ` : `
                                 <button onclick="window.castVote('${creator.id}')" class="bg-slate-800 hover:bg-red-600 text-slate-300 hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all border border-slate-700/50 hover:border-transparent">UPVOTE</button>
@@ -341,14 +380,17 @@
             e.preventDefault();
             if (!auth.currentUser || !currentUserData) return;
 
-            if (currentUserData.ownedChannelId) {
+            // Block validation rule skipped entirely for admin troubleshooting bypasses
+            if (!isAdmin && currentUserData.ownedChannelId) {
                 alert("Your account is already linked to a registered profile card entry.");
                 return;
             }
 
             const ign = document.getElementById('reg-ign').value;
             const style = document.getElementById('reg-style').value;
-            const channelId = `ch_${auth.currentUser.uid}`;
+            
+            // If admin is testing multiple cards, randomize ID to avoid collision overwriting
+            const channelId = isAdmin ? `ch_${auth.currentUser.uid}_${Date.now()}` : `ch_${auth.currentUser.uid}`;
             
             try {
                 await sd(d(db, "youtubers", channelId), {
@@ -360,8 +402,10 @@
                     ownerUid: auth.currentUser.uid
                 });
 
-                await ud(d(db, "users", auth.currentUser.uid), { ownedChannelId: channelId });
-                currentUserData.ownedChannelId = channelId;
+                if (!isAdmin) {
+                    await ud(d(db, "users", auth.currentUser.uid), { ownedChannelId: channelId });
+                    currentUserData.ownedChannelId = channelId;
+                }
                 closeRegisterModal();
             } catch (err) {
                 console.error(err);
@@ -375,24 +419,49 @@
                 return;
             }
 
-            if (currentUserData.votesLeft <= 0) {
+            // Admins possess infinite upvote capability
+            if (!isAdmin && currentUserData.votesLeft <= 0) {
                 alert("You are out of votes for this cycle!");
                 return;
             }
 
-            if (currentUserData.ownedChannelId === channelId) {
+            // Admins bypass self-vote locks
+            if (!isAdmin && currentUserData.ownedChannelId === channelId) {
                 alert("You cannot upvote your own channel entry!");
                 return;
             }
 
             try {
-                await ud(d(db, "users", auth.currentUser.uid), { votesLeft: inc(-1) });
-                currentUserData.votesLeft -= 1;
-                updateVoteBadgeUI();
+                if (!isAdmin) {
+                    await ud(d(db, "users", auth.currentUser.uid), { votesLeft: inc(-1) });
+                    currentUserData.votesLeft -= 1;
+                    updateVoteBadgeUI();
+                }
 
                 await ud(d(db, "youtubers", channelId), { votes: inc(1) });
             } catch (err) {
                 console.error(err);
+            }
+        };
+
+        // ADMIN CAPABILITY ROUTINE MODULES
+        window.adminResetVotes = async function(channelId, event) {
+            if(event) event.stopPropagation();
+            if(!isAdmin) return;
+            if(confirm("Admin Mode: Are you sure you want to reset this profile score back to 0 votes?")) {
+                try {
+                    await ud(d(db, "youtubers", channelId), { votes: 0 });
+                } catch(e) { console.error(e); }
+            }
+        };
+
+        window.adminDeleteChannel = async function(channelId, event) {
+            if(event) event.stopPropagation();
+            if(!isAdmin) return;
+            if(confirm("Admin Mode: Permanently delete this profile channel card from directory database listing indexes?")) {
+                try {
+                    await dd(d(db, "youtubers", channelId));
+                } catch(e) { console.error(e); }
             }
         };
 
