@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PK Craft Hub | Trending Videos</title>
+    
+    <!-- Google Site Verification Link -->
+    <meta name="google-site-verification" content="rZ6D-OMLgqRw6SOFJanKTfowRrYiSUWr2CWue3IObQ4" />
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
@@ -11,6 +15,19 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f19; overflow-x: hidden; }
         .text-gradient { background: linear-gradient(135deg, #ff0055 0%, #ff5500 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .video-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .video-card:hover { transform: translateY(-6px); }
+
+        .shimmer {
+            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+            background-size: 200% 100%;
+            animation: loading-shimmer 1.5s infinite linear;
+        }
+        @keyframes loading-shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
     </style>
 </head>
 <body class="text-slate-200 min-h-screen flex flex-col selection:bg-red-500 selection:text-white">
@@ -18,83 +35,87 @@
     <!-- Header / Navbar -->
     <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-40 transition-all">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="bg-gradient-to-tr from-red-600 to-orange-500 p-2 rounded-xl text-white shadow-lg">
+            <div class="flex items-center gap-3 animate__animated animate__fadeInLeft">
+                <div class="bg-gradient-to-tr from-red-600 to-orange-500 p-2 rounded-xl text-white shadow-lg shadow-red-600/30">
                     <i class="fa-solid fa-cubes text-xl animate-pulse"></i>
                 </div>
                 <span class="font-extrabold text-xl tracking-tight text-white">PK<span class="text-red-500">Craft</span>Hub</span>
             </div>
             
-            <div class="flex items-center gap-6">
-                <!-- Bidirectional Navigation Links -->
+            <div class="flex items-center gap-6 animate__animated animate__fadeInRight">
+                <!-- Fixed Navigation Routing Connections -->
                 <nav class="flex items-center gap-6">
-                    <a href="index.html" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Leaderboard</a>
-                    <a href="videos.html" class="text-sm font-bold text-red-500 border-b-2 border-red-500 pb-1">Trending Videos</a>
+                    <a href="./" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Leaderboard</a>
+                    <a href="videos" class="text-sm font-bold text-red-500 border-b-2 border-red-500 pb-1">Trending Videos</a>
                 </nav>
 
-                <!-- Dynamic Add Video Button (Hidden by default, shown to creators) -->
                 <button id="btn-add-video" onclick="openVideoModal()" class="hidden items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-sm font-semibold transition-all border border-slate-700/50 hover:border-red-500/50">
-                    <i class="fa-solid fa-video text-red-500"></i> Share New Video
+                    <i class="fa-solid fa-circle-plus text-red-500"></i> Share Video
                 </button>
 
-                <button id="btn-login" class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-sm font-bold text-white shadow-lg shadow-red-600/20 active:scale-95">
+                <button id="btn-login" class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-sm font-bold transition-all text-white shadow-lg shadow-red-600/20 active:scale-95">
                     <i class="fa-brands fa-google"></i> Login with Google
                 </button>
 
-                <div id="user-profile-badge" class="hidden items-center gap-3 bg-slate-800/80 p-1.5 pr-4 rounded-full border border-slate-700/50">
-                    <img id="user-avatar" src="" alt="Avatar" class="w-8 h-8 rounded-full bg-slate-700 border border-slate-600">
+                <div id="user-profile-badge" class="hidden items-center gap-3 bg-slate-800/80 p-1.5 pr-4 rounded-full border border-slate-700/50 shadow-inner">
+                    <img id="user-avatar" src="" alt="User Avatar" class="w-8 h-8 rounded-full bg-slate-700 border border-slate-600 shadow">
                     <div class="text-xs">
                         <p id="user-display-name" class="font-bold text-slate-200">Loading...</p>
-                        <p id="user-role-badge" class="text-emerald-400 font-medium"></p>
+                        <p id="user-role-badge" class="text-emerald-400 font-medium flex items-center gap-1"></p>
                     </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Main Section -->
+    <!-- Main Content Arena -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="text-center max-w-2xl mx-auto mb-12">
-            <span class="bg-red-500/10 text-red-400 text-xs font-bold px-3 py-1.5 rounded-full border border-red-500/20 tracking-wider uppercase inline-block mb-3">Community Feed</span>
-            <h1 class="text-4xl font-extrabold tracking-tight text-white mb-2">Creator <span class="text-gradient">Video Spotlights</span></h1>
-            <p class="text-slate-400 text-sm">Discover fresh content straight from verified community creators.</p>
+        
+        <!-- Hero Section -->
+        <div class="text-center max-w-2xl mx-auto mb-16 animate__animated animate__fadeIn">
+            <span class="bg-red-500/10 text-red-400 text-xs font-bold px-3 py-1.5 rounded-full border border-red-500/20 tracking-wider uppercase inline-block mb-3">Community Videos</span>
+            <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-white mb-4">
+                Trending Minecraft <br><span class="text-gradient">Showcase & Clips</span>
+            </h1>
+            <p class="text-slate-400 text-sm sm:text-base">
+                Discover the latest adventures, SMP episodes, and PvP edits from Pakistani creators.
+            </p>
         </div>
 
-        <!-- Video Grid Container -->
-        <div id="video-feed-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="text-center col-span-full py-12 text-slate-500">Loading collective community uploads...</div>
+        <!-- Video Cards Grid -->
+        <div id="video-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Loading Skeleton Blocks Initially -->
+            <div class="shimmer h-64 rounded-2xl border border-slate-800/50"></div>
+            <div class="shimmer h-64 rounded-2xl border border-slate-800/50"></div>
+            <div class="shimmer h-64 rounded-2xl border border-slate-800/50"></div>
         </div>
     </main>
 
-    <!-- Video Upload Modal -->
-    <div id="video-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
-            <button onclick="closeVideoModal()" class="absolute right-5 top-5 text-slate-500 hover:text-slate-300">
+    <!-- Video Submitting Modal Form Overlay -->
+    <div id="video-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden transition-opacity duration-300">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative animate__animated animate__zoomIn animate__faster">
+            <button onclick="closeVideoModal()" class="absolute right-5 top-5 text-slate-500 hover:text-slate-300 transition-colors">
                 <i class="fa-solid fa-xmark text-xl"></i>
             </button>
             
             <div class="mb-5">
                 <h3 class="text-xl font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-play text-red-500"></i> Spotlight Your Video
+                    <i class="fa-solid fa-film text-red-500"></i> Share YouTube Video
                 </h3>
-                <p class="text-slate-400 text-xs mt-1">Share your recent video. Highly limited to 1 video upload every 7 days.</p>
+                <p class="text-slate-400 text-xs mt-1">Post a clip or community update episode to share across the dashboard community platform network.</p>
             </div>
 
             <form id="video-submission-form" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Video Title</label>
-                    <input type="text" id="vid-title" required placeholder="e.g., I Survived 100 Days on Lifesteal!" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Video Title Description</label>
+                    <input type="text" id="vid-title" required placeholder="e.g., Surviving 100 Days on Lifesteal SMP!" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">YouTube Video Link</label>
-                    <input type="url" id="vid-url" required placeholder="https://youtu.be/... or https://youtube.com/watch?v=..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">YouTube Video URL Link</label>
+                    <input type="url" id="vid-url" required placeholder="e.g., https://www.youtube.com/watch?v=XXXXXX" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500">
                 </div>
-                <div class="p-3 bg-red-950/20 rounded-xl border border-red-900/30 text-xs text-red-400 flex gap-2">
-                    <i class="fa-solid fa-circle-exclamation mt-0.5"></i>
-                    <span>Once published, you cannot edit or upload another video link for the next 7 calendar days.</span>
-                </div>
-                <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-orange-500 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all text-sm hover:brightness-110">
-                    Publish Video Link
+                <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-orange-500 text-white font-bold py-3.5 rounded-xl shadow-lg hover:brightness-110 active:scale-[0.99] transition-all text-sm">
+                    Publish Video Update
                 </button>
             </form>
         </div>
@@ -105,11 +126,13 @@
         &copy; 2026 PKCraftHub. Not affiliated with Mojang Studios or Microsoft.
     </footer>
 
-    <!-- Core Logic Engine -->
+    <!-- Firebase App Modules Connector Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, onSnapshot, query, orderBy, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        
+        const firestoreImportUrl = "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        const { getFirestore: fs, collection: coll, doc: d, setDoc: sd, onSnapshot: os, deleteDoc: dd } = await import(firestoreImportUrl);
 
         const firebaseConfig = {
             apiKey: "AIzaSyAu31P9_fYebyc05OH31K6sxZ1POgeYjVE",
@@ -122,159 +145,197 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
+        const db = fs(app);
         const googleProvider = new GoogleAuthProvider();
 
         let currentUserData = null;
-        let userListenerUnsubscribe = null;
+        let globalVideosCache = [];
+        let isAdmin = false;
 
-        // Login Handler
+        // Login
         document.getElementById('btn-login').addEventListener('click', async () => {
-            try { await signInWithPopup(auth, googleProvider); } catch(e) { console.error(e); }
+            try { await signInWithPopup(auth, googleProvider); } catch (err) { console.error(err); }
         });
 
-        // Auth Observer 
-        onAuthStateChanged(auth, (user) => {
-            if (userListenerUnsubscribe) {
-                userListenerUnsubscribe();
-                userListenerUnsubscribe = null;
-            }
-
+        // Auth Tracking Loop State Setup
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
+                isAdmin = (user.email && user.email.toLowerCase() === 'densityv22@gmail.com');
+
                 document.getElementById('btn-login').classList.add('hidden');
                 document.getElementById('user-profile-badge').classList.remove('hidden');
                 document.getElementById('user-avatar').src = user.photoURL;
                 document.getElementById('user-display-name').textContent = user.displayName;
 
-                const userRef = doc(db, "users", user.uid);
-                userListenerUnsubscribe = onSnapshot(userRef, (userSnap) => {
-                    if (userSnap.exists()) {
+                const userRef = d(db, "users", user.uid);
+                
+                os(userRef, async (userSnap) => {
+                    if (!userSnap.exists()) {
+                        currentUserData = { uid: user.uid, displayName: user.displayName, photoURL: user.photoURL, role: isAdmin ? "admin" : "standard", ownedChannelId: null, postedVideoId: null };
+                        await sd(userRef, currentUserData);
+                    } else {
                         currentUserData = userSnap.data();
-                        document.getElementById('user-role-badge').textContent = (currentUserData.role || 'STANDARD').toUpperCase();
-                        
-                        if (currentUserData.ownedChannelId) {
-                            document.getElementById('btn-add-video').classList.remove('hidden');
-                            document.getElementById('btn-add-video').classList.add('flex');
-                        } else {
-                            document.getElementById('btn-add-video').classList.add('hidden');
-                            document.getElementById('btn-add-video').classList.remove('flex');
-                        }
                     }
+
+                    document.getElementById('user-role-badge').className = `font-medium flex items-center gap-1 ${isAdmin ? 'text-red-500' : 'text-emerald-400'}`;
+                    document.getElementById('user-role-badge').textContent = isAdmin ? "ADMIN" : "STANDARD";
+
+                    // Admins bypass standard restrictions to post infinite videos freely
+                    if (isAdmin || !currentUserData.postedVideoId) {
+                        document.getElementById('btn-add-video').classList.remove('hidden');
+                        document.getElementById('btn-add-video').classList.add('flex');
+                    } else {
+                        document.getElementById('btn-add-video').classList.add('hidden');
+                        document.getElementById('btn-add-video').classList.remove('flex');
+                    }
+
+                    buildVideosUI();
                 });
             } else {
                 document.getElementById('btn-login').classList.remove('hidden');
                 document.getElementById('user-profile-badge').classList.add('hidden');
                 document.getElementById('btn-add-video').classList.add('hidden');
                 currentUserData = null;
+                isAdmin = false;
+                buildVideosUI();
             }
         });
 
-        // Helper: Extracts unique 11-character ID from all formats of YouTube links
-        function extractVideoID(url) {
+        // Realtime Tracker Collection Updates Sync Engine
+        os(coll(db, "videos"), (snapshot) => {
+            globalVideosCache = [];
+            snapshot.forEach(doc => globalVideosCache.push({ id: doc.id, ...doc.data() }));
+            buildVideosUI();
+        });
+
+        // YouTube ID Parser Utility Helper Method
+        function parseYoutubeId(url) {
             const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
             const match = url.match(regExp);
             return (match && match[2].length === 11) ? match[2] : null;
         }
 
-        // Live Realtime Feed Listener
-        const q = query(collection(db, "videos"), orderBy("timestamp", "desc"));
-        onSnapshot(q, (snapshot) => {
-            const grid = document.getElementById('video-feed-grid');
+        // Render Page Layout
+        function buildVideosUI() {
+            const grid = document.getElementById('video-grid');
             grid.innerHTML = '';
-            
-            if(snapshot.empty) {
-                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500">No videos available.</div>`;
+
+            if (globalVideosCache.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-20 text-slate-500">No community videos have been posted yet.</div>`;
                 return;
             }
 
-            snapshot.forEach((doc) => {
-                const data = doc.data();
+            // Order listings by reverse chronological creation sequence
+            let sortedVideos = [...globalVideosCache].sort((a,b) => b.createdAt - a.createdAt);
+
+            sortedVideos.forEach(video => {
+                const ytid = parseYoutubeId(video.url);
+                if(!ytid) return;
+
+                const thumbUrl = `https://img.youtube.com/vi/${ytid}/maxresdefault.jpg`;
+
+                // Admin action element dashboard controls configuration injector module
+                let adminDeleteBtn = "";
+                if (isAdmin) {
+                    adminDeleteBtn = `
+                        <button onclick="window.adminDeleteVideo('${video.id}', event)" title="Admin Delete Video" class="absolute top-3 right-3 z-30 w-8 h-8 rounded-xl bg-slate-950/80 hover:bg-red-600 border border-slate-800 text-red-500 hover:text-white transition-all flex items-center justify-center backdrop-blur-md shadow-lg">
+                            <i class="fa-solid fa-trash-can text-xs"></i>
+                        </button>
+                    `;
+                }
+
                 grid.innerHTML += `
-                    <div class="bg-slate-900 border border-slate-800/80 rounded-2xl overflow-hidden shadow-xl animate__animated animate__fadeInUp">
-                        <div class="relative aspect-video bg-slate-950">
-                            <iframe class="w-full h-full" src="https://www.youtube.com/embed/${data.videoId}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                        </div>
-                        <div class="p-5">
-                            <span class="text-[10px] uppercase font-bold tracking-wider text-red-400 bg-red-500/10 px-2.5 py-1 rounded-md border border-red-500/10 inline-block mb-2">Spotlighted</span>
-                            <h3 class="font-bold text-white text-base line-clamp-2 mb-3">${data.title}</h3>
-                            <div class="flex items-center gap-3 pt-3 border-t border-slate-800/60">
-                                <img src="${data.creatorLogo}" class="w-7 h-7 rounded-full bg-slate-800 border border-slate-700">
-                                <div class="text-xs">
-                                    <p class="font-bold text-slate-300">${data.creatorName}</p>
-                                    <p class="text-[10px] text-slate-500">${new Date(data.timestamp).toLocaleDateString()}</p>
+                    <div class="video-card bg-slate-900/40 border border-slate-800/80 rounded-2xl overflow-hidden flex flex-col relative animate__animated animate__fadeInUp">
+                        ${adminDeleteBtn}
+                        
+                        <!-- Thumbnail Wrapper -->
+                        <a href="${video.url}" target="_blank" class="block relative group aspect-video overflow-hidden bg-slate-950">
+                            <img src="${thumbUrl}" alt="Thumbnail" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onerror="this.src='https://img.youtube.com/vi/${ytid}/hqdefault.jpg'">
+                            <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div class="w-12 h-12 bg-red-600 text-white rounded-full flex items-center justify-center shadow-xl shadow-red-600/40 transform scale-90 group-hover:scale-100 transition-transform">
+                                    <i class="fa-solid fa-play text-lg ml-1"></i>
+                                </div>
+                            </div>
+                        </a>
+
+                        <!-- Metadata Info Container -->
+                        <div class="p-5 flex-grow flex flex-col justify-between">
+                            <div>
+                                <h4 class="font-bold text-white text-base line-clamp-2 hover:text-red-400 transition-colors">
+                                    <a href="${video.url}" target="_blank">${video.title}</a>
+                                </h4>
+                            </div>
+                            
+                            <div class="flex items-center gap-3 border-t border-slate-800/60 mt-4 pt-4">
+                                <img src="${video.creatorAvatar || 'https://www.gravatar.com/avatar/?d=mp'}" alt="Avatar" class="w-7 h-7 rounded-full border border-slate-700">
+                                <div class="text-xs truncate">
+                                    <p class="font-semibold text-slate-300 truncate">${video.creatorName}</p>
+                                    <p class="text-slate-500 text-[10px]">Posted recently</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 `;
             });
-        });
+        }
 
-        // Form Submit Handler (With Double-Click Protection)
+        // Form Submission Processor Route
         document.getElementById('video-submission-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!auth.currentUser || !currentUserData) return;
 
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-
-            // 1. Authorization Guard
-            if (!currentUserData.ownedChannelId) {
-                alert("Access Denied: You must register your channel on the Leaderboard first!");
+            if (!isAdmin && currentUserData.postedVideoId) {
+                alert("You've already linked a community video file entry on your account matrix.");
                 return;
             }
 
-            // 2. 7-Day Cooldown Limitation Enforcement
-            const currentTime = Date.now();
-            const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
-            
-            if (currentUserData.lastVideoUploadTime && (currentTime - currentUserData.lastVideoUploadTime < sevenDaysInMs)) {
-                const remainingTimeMs = sevenDaysInMs - (currentTime - currentUserData.lastVideoUploadTime);
-                const remainingDays = Math.ceil(remainingTimeMs / (1000 * 60 * 60 * 24));
-                alert(`Cooldown Active: You can upload 1 video every 7 days. Please wait ${remainingDays} more day(s).`);
+            const title = document.getElementById('vid-title').value;
+            const url = document.getElementById('vid-url').value;
+
+            if(!parseYoutubeId(url)) {
+                alert("Please input a valid standard YouTube video share watch link URL format.");
                 return;
             }
 
-            const urlInput = document.getElementById('vid-url').value;
-            const titleInput = document.getElementById('vid-title').value;
-            const videoId = extractVideoID(urlInput);
-
-            // 3. Link Parsing Check
-            if (!videoId) {
-                alert("Invalid URL structure! Please paste a clean watch link or share link straight from YouTube.");
-                return;
-            }
+            // Create timestamp specific ID tags for admin testing to ensure keys never lock or overlap
+            const videoId = isAdmin ? `vid_${auth.currentUser.uid}_${Date.now()}` : `vid_${auth.currentUser.uid}`;
 
             try {
-                submitBtn.disabled = true;
-                submitBtn.innerText = "Publishing Video...";
-
-                const videoDocId = `vid_${auth.currentUser.uid}_${currentTime}`;
-                
-                await setDoc(doc(db, "videos", videoDocId), {
-                    videoId: videoId,
-                    title: titleInput,
+                await sd(d(db, "videos", videoId), {
+                    title: title,
+                    url: url,
                     creatorName: auth.currentUser.displayName,
-                    creatorLogo: auth.currentUser.photoURL,
+                    creatorAvatar: auth.currentUser.photoURL,
                     ownerUid: auth.currentUser.uid,
-                    timestamp: currentTime
+                    createdAt: Date.now()
                 });
 
-                await updateDoc(doc(db, "users", auth.currentUser.uid), {
-                    lastVideoUploadTime: currentTime
-                });
+                if (!isAdmin) {
+                    const userRef = d(db, "users", auth.currentUser.uid);
+                    await sd(userRef, { postedVideoId: videoId }, { merge: true });
+                    currentUserData.postedVideoId = videoId;
+                }
 
-                alert("Success! Your video has been spotlighted onto the global feed.");
                 document.getElementById('video-submission-form').reset();
                 closeVideoModal();
-
             } catch (err) {
-                console.error("Firestore Upload Error Logs:", err);
-                alert("An error occurred while uploading.");
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = "Publishing Video Link";
+                console.error(err);
             }
         });
+
+        // ADMIN TERMINATION SYSTEM ROUTINE
+        window.adminDeleteVideo = async function(videoId, event) {
+            if(event) event.stopPropagation();
+            if(!isAdmin) return;
+
+            if(confirm("Admin Panel Control Mode: Are you sure you want to permanently remove this trending community video item?")) {
+                try {
+                    await dd(d(db, "videos", videoId));
+                } catch(e) {
+                    console.error("Failed executing administrator remove request action:", e);
+                }
+            }
+        };
 
         window.openVideoModal = function() { document.getElementById('video-modal').classList.remove('hidden'); }
         window.closeVideoModal = function() { document.getElementById('video-modal').classList.add('hidden'); }
