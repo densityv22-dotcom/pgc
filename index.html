@@ -174,6 +174,7 @@
                         currentUserData = data;
                     }
                     
+                    // Toggle visibility dynamically if channel was deleted (ownedChannelId is null/undefined)
                     if (isAdmin || !currentUserData.ownedChannelId) {
                         document.getElementById('btn-register-channel').className = "flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 text-sm font-semibold";
                     } else {
@@ -227,9 +228,8 @@
             let top3 = filtered.slice(0, 3);
             let others = filtered.slice(3);
             
-            // Build fixed 2-1-3 layout structure pattern for the podium showcase
             let podiumHtml = ["", "", ""];
-            let orderMap = [1, 0, 2]; // 0: Second (#2), 1: First (#1), 2: Third (#3)
+            let orderMap = [1, 0, 2]; // Fixed pattern layout order placement
             
             top3.forEach((creator, index) => {
                 const isSelf = currentUserData && currentUserData.ownedChannelId === creator.id;
@@ -322,8 +322,30 @@
             } catch (err) { console.error(err); }
         });
 
+        // Fixed Admin Delete Channel handler to reset ownedChannelId back to null inside the user's document
+        window.adminDeleteChannel = async function(id, e) { 
+            if(e) e.stopPropagation(); 
+            if(isAdmin && confirm("Delete entry?")) {
+                try {
+                    // Fetch channel to find the owner's UID before deletion
+                    const creatorsColl = coll(db, "youtubers");
+                    snapshot.forEach(async (doc) => {
+                        if(doc.id === id) {
+                            const ownerUid = doc.data().ownerUid;
+                            if(ownerUid) {
+                                await ud(d(db, "users", ownerUid), { ownedChannelId: null });
+                            }
+                        }
+                    });
+                    await dd(d(db, "youtubers", id)); 
+                } catch(err) {
+                    // Fallback absolute deletion handling if data mapping is asynchronous
+                    await dd(d(db, "youtubers", id));
+                }
+            }
+        };
+        
         window.adminResetVotes = async function(id, e) { if(e) e.stopPropagation(); if(isAdmin && confirm("Reset votes?")) await ud(d(db, "youtubers", id), { votes: 0 }); };
-        window.adminDeleteChannel = async function(id, e) { if(e) e.stopPropagation(); if(isAdmin && confirm("Delete entry?")) await dd(d(db, "youtubers", id)); };
         window.openRegisterModal = function() { document.getElementById('register-modal').classList.remove('hidden'); }
         window.closeRegisterModal = function() { document.getElementById('register-modal').classList.add('hidden'); }
     </script>
