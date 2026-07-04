@@ -3,23 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PK Craft Hub | Live Voting Directory</title>
+    <title>PK Craft Hub | Trending Videos</title>
     
+    <!-- Google Site Verification Link -->
     <meta name="google-site-verification" content="rZ6D-OMLgqRw6SOFJanKTfowRrYiSUWr2CWue3IObQ4" />
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f19; overflow-x: hidden; }
         .text-gradient { background: linear-gradient(135deg, #ff0055 0%, #ff5500 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        /* Premium custom smooth transition animations */
-        .creator-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .creator-card:hover { transform: translateY(-8px) scale(1.02); }
-        
-        /* Shimmer Loading Animation */
+        .video-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .video-card:hover { transform: translateY(-6px); }
+
         .shimmer {
             background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
             background-size: 200% 100%;
@@ -33,6 +32,7 @@
 </head>
 <body class="text-slate-200 min-h-screen flex flex-col selection:bg-red-500 selection:text-white">
 
+    <!-- Header / Navbar -->
     <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-40 transition-all">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3 animate__animated animate__fadeInLeft">
@@ -43,13 +43,14 @@
             </div>
             
             <div class="flex items-center gap-6 animate__animated animate__fadeInRight">
+                <!-- Bidirectional Navigation Menu Links -->
                 <nav class="flex items-center gap-6">
-                    <a href="index.html" class="text-sm font-bold text-red-500 border-b-2 border-red-500 pb-1">Leaderboard</a>
-                    <a href="videos.html" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Trending Videos</a>
+                    <a href="index.html" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Leaderboard</a>
+                    <a href="videos.html" class="text-sm font-bold text-red-500 border-b-2 border-red-500 pb-1">Trending Videos</a>
                 </nav>
 
-                <button id="btn-register-channel" onclick="openRegisterModal()" class="hidden items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-sm font-semibold transition-all border border-slate-700/50 hover:border-red-500/50">
-                    <i class="fa-solid fa-square-plus text-red-500"></i> Register Channel
+                <button id="btn-add-video" onclick="openVideoModal()" class="hidden items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-sm font-semibold transition-all border border-slate-700/50 hover:border-red-500/50">
+                    <i class="fa-solid fa-circle-plus text-red-500"></i> Share Video
                 </button>
 
                 <button id="btn-login" class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-sm font-bold transition-all text-white shadow-lg shadow-red-600/20 active:scale-95">
@@ -60,92 +61,78 @@
                     <img id="user-avatar" src="" alt="User Avatar" class="w-8 h-8 rounded-full bg-slate-700 border border-slate-600 shadow">
                     <div class="text-xs">
                         <p id="user-display-name" class="font-bold text-slate-200">Loading...</p>
-                        <p id="user-vote-status" class="text-emerald-400 font-medium flex items-center gap-1"></p>
+                        <p id="user-role-badge" class="text-emerald-400 font-medium flex items-center gap-1"></p>
                     </div>
                 </div>
             </div>
         </div>
     </header>
 
+    <!-- Main Content Arena -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
+        <!-- Hero Section -->
         <div class="text-center max-w-2xl mx-auto mb-16 animate__animated animate__fadeIn">
-            <span class="bg-red-500/10 text-red-400 text-xs font-bold px-3 py-1.5 rounded-full border border-red-500/20 tracking-wider uppercase inline-block mb-3">Community Hub v2.0</span>
+            <span class="bg-red-500/10 text-red-400 text-xs font-bold px-3 py-1.5 rounded-full border border-red-500/20 tracking-wider uppercase inline-block mb-3">Community Videos</span>
             <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-white mb-4">
-                Pakistani Minecraft <br><span class="text-gradient">Creator Leaderboard</span>
+                Trending Minecraft <br><span class="text-gradient">Showcase & Clips</span>
             </h1>
             <p class="text-slate-400 text-sm sm:text-base">
-                Real-time voting powered by Google Authentication. Safe, direct, and un-bottable.
+                Discover the latest adventures, SMP episodes, and PvP edits from Pakistani creators.
             </p>
         </div>
 
-        <div class="max-w-md mx-auto mb-12 animate__animated animate__fadeInUp">
-            <div class="relative group">
-                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-base transition-colors group-focus-within:text-red-500"></i>
-                <input type="text" id="search-bar" placeholder="Search YouTuber or In-game Name..." class="w-full bg-slate-900/60 backdrop-blur border border-slate-800 rounded-2xl pl-12 pr-4 py-3.5 text-sm text-white focus:outline-none focus:border-red-500/80 transition-all placeholder:text-slate-600 shadow-xl">
-            </div>
-        </div>
-
-        <div id="podium-container" class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-16 items-end">
-            </div>
-
-        <div class="border-t border-slate-900/80 my-8"></div>
-
-        <h3 class="text-lg font-bold text-slate-400 mb-6 flex items-center gap-2 animate__animated animate__fadeIn"><i class="fa-solid fa-list-ol text-red-500"></i> Full Directory Standings</h3>
-        <div id="creator-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="shimmer h-48 rounded-2xl border border-slate-800/50"></div>
-            <div class="shimmer h-48 rounded-2xl border border-slate-800/50"></div>
-            <div class="shimmer h-48 rounded-2xl border border-slate-800/50"></div>
+        <!-- Video Cards Grid -->
+        <div id="video-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Loading Skeleton Blocks Initially -->
+            <div class="shimmer h-64 rounded-2xl border border-slate-800/50"></div>
+            <div class="shimmer h-64 rounded-2xl border border-slate-800/50"></div>
+            <div class="shimmer h-64 rounded-2xl border border-slate-800/50"></div>
         </div>
     </main>
 
-    <div id="register-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden transition-opacity duration-300">
+    <!-- Video Submitting Modal Form Overlay -->
+    <div id="video-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden transition-opacity duration-300">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative animate__animated animate__zoomIn animate__faster">
-            <button onclick="closeRegisterModal()" class="absolute right-5 top-5 text-slate-500 hover:text-slate-300 transition-colors">
+            <button onclick="closeVideoModal()" class="absolute right-5 top-5 text-slate-500 hover:text-slate-300 transition-colors">
                 <i class="fa-solid fa-xmark text-xl"></i>
             </button>
             
             <div class="mb-5">
                 <h3 class="text-xl font-bold text-white flex items-center gap-2">
-                    <i class="fa-brands fa-youtube text-red-500"></i> Connect Creator Profile
+                    <i class="fa-solid fa-film text-red-500"></i> Share YouTube Video
                 </h3>
-                <p class="text-slate-400 text-xs mt-1">Your Google Channel Account identity will auto-bind to prevent imitation profiles.</p>
+                <p class="text-slate-400 text-xs mt-1">Post a clip or community update episode to share across the dashboard community platform network.</p>
             </div>
 
-            <form id="channel-registration-form" class="space-y-4">
+            <form id="video-submission-form" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Minecraft IGN (In-Game Name)</label>
-                    <input type="text" id="reg-ign" required placeholder="e.g., GetBetterLt3" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Video Title Description</label>
+                    <input type="text" id="vid-title" required placeholder="e.g., Surviving 100 Days on Lifesteal SMP!" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Primary Focus / Playstyle</label>
-                    <select id="reg-style" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-red-500 text-slate-300">
-                        <option value="Java / Lifesteal">Java / Lifesteal SMP</option>
-                        <option value="Bedrock / Factions">Bedrock / Factions</option>
-                        <option value="Speedrunner">Speedrunner</option>
-                        <option value="PvP Minigames">PvP Minigames</option>
-                    </select>
-                </div>
-                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs text-slate-400">
-                    <i class="fa-brands fa-youtube text-red-500 mr-1"></i> Public Channel Name and Logo will read automatically from your logged-in session profile data.
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">YouTube Video URL Link</label>
+                    <input type="url" id="vid-url" required placeholder="e.g., https://www.youtube.com/watch?v=XXXXXX" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500">
                 </div>
                 <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-orange-500 text-white font-bold py-3.5 rounded-xl shadow-lg hover:brightness-110 active:scale-[0.99] transition-all text-sm">
-                    Link and Publish Channel
+                    Publish Video Update
                 </button>
             </form>
         </div>
     </div>
 
+    <!-- Footer -->
     <footer class="border-t border-slate-900 bg-slate-950/60 py-6 text-center text-xs text-slate-600 mt-12">
         &copy; 2026 PKCraftHub. Not affiliated with Mojang Studios or Microsoft.
     </footer>
 
+    <!-- Firebase App Modules Connector Logic Implementation Setup Hook Scripts -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         
         const firestoreImportUrl = "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        const { getFirestore: fs, collection: coll, doc: d, setDoc: sd, getDoc: gd, onSnapshot: os, updateDoc: ud, deleteDoc: dd, increment: inc } = await import(firestoreImportUrl);
+        const { getFirestore: fs, collection: coll, doc: d, setDoc: sd, onSnapshot: os, deleteDoc: dd } = await import(firestoreImportUrl);
 
         const firebaseConfig = {
             apiKey: "AIzaSyAu31P9_fYebyc05OH31K6sxZ1POgeYjVE",
@@ -162,7 +149,7 @@
         const googleProvider = new GoogleAuthProvider();
 
         let currentUserData = null;
-        let globalCreatorsCache = [];
+        let globalVideosCache = [];
         let isAdmin = false;
 
         // Login
@@ -170,10 +157,9 @@
             try { await signInWithPopup(auth, googleProvider); } catch (err) { console.error(err); }
         });
 
-        // Authentication State Listener
+        // Auth Tracking Loop State Setup Routine Configurations
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // Hardcoded Admin Checker Logic via client session account metadata email profile checks
                 isAdmin = (user.email && user.email.toLowerCase() === 'densityv22@gmail.com');
 
                 document.getElementById('btn-login').classList.add('hidden');
@@ -183,290 +169,176 @@
 
                 const userRef = d(db, "users", user.uid);
                 
-                // Switch to realtime listener for the user doc to handle channel changes
                 os(userRef, async (userSnap) => {
                     if (!userSnap.exists()) {
-                        currentUserData = { 
-                            uid: user.uid, 
-                            displayName: user.displayName, 
-                            photoURL: user.photoURL, 
-                            role: isAdmin ? "admin" : "standard", 
-                            votesLeft: 1, 
-                            ownedChannelId: null 
-                        };
+                        currentUserData = { uid: user.uid, displayName: user.displayName, photoURL: user.photoURL, role: isAdmin ? "admin" : "standard", ownedChannelId: null, postedVideoId: null };
                         await sd(userRef, currentUserData);
                     } else {
                         currentUserData = userSnap.data();
-                        if(isAdmin && currentUserData.role !== 'admin') {
-                            await ud(userRef, { role: "admin" });
-                            currentUserData.role = "admin";
-                        }
                     }
-                    
-                    // Admins can always register multiple times, standard users are locked out if they already own a channel
-                    if (isAdmin || !currentUserData.ownedChannelId) {
-                        document.getElementById('btn-register-channel').classList.remove('hidden');
-                        document.getElementById('btn-register-channel').classList.add('flex');
+
+                    document.getElementById('user-role-badge').className = `font-medium flex items-center gap-1 ${isAdmin ? 'text-red-500' : 'text-emerald-400'}`;
+                    document.getElementById('user-role-badge').textContent = isAdmin ? "ADMIN" : "STANDARD";
+
+                    // Admins bypass limitations to post infinite video modules freely
+                    if (isAdmin || !currentUserData.postedVideoId) {
+                        document.getElementById('btn-add-video').classList.remove('hidden');
+                        document.getElementById('btn-add-video').classList.add('flex');
                     } else {
-                        document.getElementById('btn-register-channel').classList.add('hidden');
-                        document.getElementById('btn-register-channel').classList.remove('flex');
+                        document.getElementById('btn-add-video').classList.add('hidden');
+                        document.getElementById('btn-add-video').classList.remove('flex');
                     }
-                    
-                    updateVoteBadgeUI();
-                    buildLeaderboardUI();
+
+                    buildVideosUI();
                 });
             } else {
                 document.getElementById('btn-login').classList.remove('hidden');
                 document.getElementById('user-profile-badge').classList.add('hidden');
-                document.getElementById('btn-register-channel').classList.add('hidden');
+                document.getElementById('btn-add-video').classList.add('hidden');
                 currentUserData = null;
                 isAdmin = false;
-                buildLeaderboardUI();
+                buildVideosUI();
             }
         });
 
-        function updateVoteBadgeUI() {
-            if (!currentUserData) return;
-            const displayRole = isAdmin ? "ADMIN" : currentUserData.role.toUpperCase();
-            const displayVotes = isAdmin ? "∞" : currentUserData.votesLeft;
-            document.getElementById('user-vote-status').innerHTML = `
-                <span class="w-1.5 h-1.5 rounded-full ${isAdmin ? 'bg-red-500' : 'bg-emerald-400'} inline-block animate-pulse"></span> 
-                ${displayRole} (${displayVotes} Left)
-            `;
+        // Realtime Tracker Collection Updates Sync Engine
+        os(coll(db, "videos"), (snapshot) => {
+            globalVideosCache = [];
+            snapshot.forEach(doc => globalVideosCache.push({ id: doc.id, ...doc.data() }));
+            buildVideosUI();
+        });
+
+        // YouTube ID Parser Utility Helper Method
+        function parseYoutubeId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
         }
 
-        // Live Realtime Dynamic Syncing Engine
-        os(coll(db, "youtubers"), (snapshot) => {
-            globalCreatorsCache = [];
-            snapshot.forEach(doc => globalCreatorsCache.push({ id: doc.id, ...doc.data() }));
-            buildLeaderboardUI();
-        });
+        // Render Page Layout Template Dynamic Matrix Creator Builder
+        function buildVideosUI() {
+            const grid = document.getElementById('video-grid');
+            grid.innerHTML = '';
 
-        // Search engine keyup hook
-        document.getElementById('search-bar').addEventListener('input', () => {
-            buildLeaderboardUI();
-        });
-
-        // Main Rendering Algorithm
-        function buildLeaderboardUI() {
-            const grid = document.getElementById('creator-grid');
-            const podiumContainer = document.getElementById('podium-container');
-            const searchTerm = document.getElementById('search-bar').value.toLowerCase();
-
-            let filtered = globalCreatorsCache.filter(c => 
-                (c.name && c.name.toLowerCase().includes(searchTerm)) || 
-                (c.ign && c.ign.toLowerCase().includes(searchTerm))
-            );
-
-            filtered.sort((a, b) => b.votes - a.votes);
-
-            if (filtered.length === 0) {
-                podiumContainer.innerHTML = '';
-                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500">No channels match criteria or are registered.</div>`;
+            if (globalVideosCache.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-20 text-slate-500">No community videos have been posted yet.</div>`;
                 return;
             }
 
-            let top3 = filtered.slice(0, 3);
-            let others = filtered.slice(3);
-            let podiumHtml = ["", "", ""];
-            let orderMap = [1, 0, 2];
-            
-            top3.forEach((creator, index) => {
-                const isSelfOwned = currentUserData && currentUserData.ownedChannelId === creator.id;
-                let rankLabel = index + 1;
-                let medalColor = "bg-amber-500 text-slate-950";
-                let cardGlow = "border-amber-500/40 bg-gradient-to-b from-amber-950/20 to-slate-900/40 md:scale(105) z-10 shadow-2xl shadow-amber-500/5";
-                
-                if (index === 1) {
-                    medalColor = "bg-slate-300 text-slate-950";
-                    cardGlow = "border-slate-400/20 bg-slate-900/40";
-                } else if (index === 2) {
-                    medalColor = "bg-amber-700 text-white";
-                    cardGlow = "border-amber-800/20 bg-slate-900/40";
-                }
+            // Order listings by reverse chronologic creation sequence
+            let sortedVideos = [...globalVideosCache].sort((a,b) => b.createdAt - a.createdAt);
 
-                // Inject Admin Action Control Options for the Top Podium cards
-                let adminControls = "";
+            sortedVideos.forEach(video => {
+                const ytid = parseYoutubeId(video.url);
+                if(!ytid) return;
+
+                const thumbUrl = `https://img.youtube.com/vi/${ytid}/maxresdefault.jpg`;
+
+                // Admin action element dashboard controls configuration injector module
+                let adminDeleteBtn = "";
                 if (isAdmin) {
-                    adminControls = `
-                        <div class="absolute top-3 right-3 flex gap-1.5 z-20">
-                            <button onclick="window.adminResetVotes('${creator.id}', event)" title="Reset Card Votes" class="w-6 h-6 rounded-md bg-slate-950 text-orange-400 border border-slate-800 flex items-center justify-center hover:bg-orange-500 hover:text-white transition-all text-[10px]"><i class="fa-solid fa-rotate-left"></i></button>
-                            <button onclick="window.adminDeleteChannel('${creator.id}', event)" title="Delete Profile Card" class="w-6 h-6 rounded-md bg-slate-950 text-red-500 border border-slate-800 flex items-center justify-center hover:bg-red-600 hover:text-white transition-all text-[10px]"><i class="fa-solid fa-trash-can"></i></button>
-                        </div>
-                    `;
-                }
-
-                let slotHtml = `
-                    <div class="border ${cardGlow} rounded-3xl p-6 flex flex-col justify-between items-center relative overflow-hidden animate__animated animate__fadeInUp">
-                        ${adminControls}
-                        <div class="absolute top-3 left-3 ${medalColor} rounded-full font-black text-xs w-6 h-6 flex items-center justify-center shadow">#${rankLabel}</div>
-                        <div class="text-center mt-2 flex flex-col items-center">
-                            <img src="${creator.logoUrl}" alt="Logo" class="w-16 h-16 rounded-2xl border-2 border-slate-700 bg-slate-800 p-1 object-cover shadow-lg">
-                            <h4 class="font-extrabold text-white text-lg mt-3">${creator.name}</h4>
-                            <p class="text-xs text-slate-500">IGN: <span class="text-red-400 font-mono font-bold">${creator.ign}</span></p>
-                            <span class="mt-2 px-2.5 py-0.5 text-[11px] font-bold bg-slate-800/80 border border-slate-700 text-slate-300 rounded-md block">${creator.style}</span>
-                        </div>
-                        <div class="w-full border-t border-slate-800/60 mt-4 pt-4 flex items-center justify-between">
-                            <div class="text-left">
-                                <span class="text-[9px] uppercase tracking-wider text-slate-500 font-bold block">Score Balance</span>
-                                <span class="text-lg font-black text-white"><i class="fa-solid fa-fire text-orange-500 mr-1 animate-pulse"></i>${creator.votes}</span>
-                            </div>
-                            ${(isSelfOwned && !isAdmin) ? `
-                                <button disabled class="bg-slate-800 text-slate-500 px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-700 cursor-not-allowed">Blocked</button>
-                            ` : `
-                                <button onclick="window.castVote('${creator.id}')" class="bg-gradient-to-r from-red-600 to-orange-500 text-white px-4 py-2 rounded-xl text-xs font-black shadow-lg hover:brightness-110 active:scale-95 transition-all">VOTE</button>
-                            `}
-                        </div>
-                    </div>
-                `;
-                
-                if (top3.length === 3) {
-                    podiumHtml[orderMap[index]] = slotHtml;
-                } else {
-                    podiumHtml[index] = slotHtml;
-                }
-            });
-
-            podiumContainer.innerHTML = podiumHtml.join('');
-            grid.innerHTML = '';
-            
-            if (others.length === 0 && top3.length > 0) {
-                grid.innerHTML = `<div class="col-span-full text-center py-4 text-slate-600 text-xs">End of standings leaderboard registry records.</div>`;
-            }
-
-            others.forEach((creator, index) => {
-                const isSelfOwned = currentUserData && currentUserData.ownedChannelId === creator.id;
-                let actualRank = index + 4;
-                
-                // Inject Admin Action Control Options for Standard list records
-                let adminRowControls = "";
-                if (isAdmin) {
-                    adminRowControls = `
-                        <div class="flex items-center gap-1 bg-slate-950 p-1 rounded-lg border border-slate-800/60">
-                            <button onclick="window.adminResetVotes('${creator.id}', event)" class="w-6 h-6 rounded bg-slate-900 text-orange-400 flex items-center justify-center hover:bg-orange-500 hover:text-white text-[10px] transition-all"><i class="fa-solid fa-rotate-left"></i></button>
-                            <button onclick="window.adminDeleteChannel('${creator.id}', event)" class="w-6 h-6 rounded bg-slate-900 text-red-500 flex items-center justify-center hover:bg-red-600 hover:text-white text-[10px] transition-all"><i class="fa-solid fa-trash-can"></i></button>
-                        </div>
+                    adminDeleteBtn = `
+                        <button onclick="window.adminDeleteVideo('${video.id}', event)" title="Admin Delete Video" class="absolute top-3 right-3 z-30 w-8 h-8 rounded-xl bg-slate-950/80 hover:bg-red-600 border border-slate-800 text-red-500 hover:text-white transition-all flex items-center justify-center backdrop-blur-md shadow-lg">
+                            <i class="fa-solid fa-trash-can text-xs"></i>
+                        </button>
                     `;
                 }
 
                 grid.innerHTML += `
-                    <div class="creator-card border border-slate-800/80 bg-slate-900/20 rounded-2xl p-5 flex items-center justify-between relative animate__animated animate__fadeInUp">
-                        <div class="flex items-center gap-4">
-                            <span class="font-black text-slate-600 text-sm w-5 text-center">#${actualRank}</span>
-                            <img src="${creator.logoUrl}" alt="Logo" class="w-12 h-12 rounded-xl border border-slate-700 bg-slate-800 p-0.5 object-cover">
+                    <div class="video-card bg-slate-900/40 border border-slate-800/80 rounded-2xl overflow-hidden flex flex-col relative animate__animated animate__fadeInUp">
+                        ${adminDeleteBtn}
+                        
+                        <!-- Thumbnail Wrapper -->
+                        <a href="${video.url}" target="_blank" class="block relative group aspect-video overflow-hidden bg-slate-950">
+                            <img src="${thumbUrl}" alt="Thumbnail" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onerror="this.src='https://img.youtube.com/vi/${ytid}/hqdefault.jpg'">
+                            <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div class="w-12 h-12 bg-red-600 text-white rounded-full flex items-center justify-center shadow-xl shadow-red-600/40 transform scale-90 group-hover:scale-100 transition-transform">
+                                    <i class="fa-solid fa-play text-lg ml-1"></i>
+                                </div>
+                            </div>
+                        </a>
+
+                        <!-- Metadata Info Container -->
+                        <div class="p-5 flex-grow flex flex-col justify-between">
                             <div>
-                                <h4 class="font-bold text-white text-sm">${creator.name}</h4>
-                                <p class="text-[11px] text-slate-400 font-mono">IGN: ${creator.ign} • <span class="text-slate-500">${creator.style}</span></p>
+                                <h4 class="font-bold text-white text-base line-clamp-2 hover:text-red-400 transition-colors">
+                                    <a href="${video.url}" target="_blank">${video.title}</a>
+                                </h4>
                             </div>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            ${adminRowControls}
-                            <div class="text-right">
-                                <span class="text-sm font-black text-slate-200 block"><i class="fa-solid fa-heart text-red-500 text-xs mr-1"></i>${creator.votes}</span>
+                            
+                            <div class="flex items-center gap-3 border-t border-slate-800/60 mt-4 pt-4">
+                                <img src="${video.creatorAvatar || 'https://www.gravatar.com/avatar/?d=mp'}" alt="Avatar" class="w-7 h-7 rounded-full border border-slate-700">
+                                <div class="text-xs truncate">
+                                    <p class="font-semibold text-slate-300 truncate">${video.creatorName}</p>
+                                    <p class="text-slate-500 text-[10px]">Posted recently</p>
+                                </div>
                             </div>
-                            ${(isSelfOwned && !isAdmin) ? `
-                                <button disabled class="bg-slate-800 text-slate-600 px-2.5 py-1.5 rounded-lg text-[10px] font-bold cursor-not-allowed">Locked</button>
-                            ` : `
-                                <button onclick="window.castVote('${creator.id}')" class="bg-slate-800 hover:bg-red-600 text-slate-300 hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all border border-slate-700/50 hover:border-transparent">UPVOTE</button>
-                            `}
                         </div>
                     </div>
                 `;
             });
         }
 
-        // Channel Registration Form Submit
-        document.getElementById('channel-registration-form').addEventListener('submit', async (e) => {
+        // Form Submission Processor Route
+        document.getElementById('video-submission-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!auth.currentUser || !currentUserData) return;
 
-            // Block validation rule skipped entirely for admin troubleshooting bypasses
-            if (!isAdmin && currentUserData.ownedChannelId) {
-                alert("Your account is already linked to a registered profile card entry.");
+            if (!isAdmin && currentUserData.postedVideoId) {
+                alert("You've already linked a community video file entry on your account matrix.");
                 return;
             }
 
-            const ign = document.getElementById('reg-ign').value;
-            const style = document.getElementById('reg-style').value;
-            
-            // If admin is testing multiple cards, randomize ID to avoid collision overwriting
-            const channelId = isAdmin ? `ch_${auth.currentUser.uid}_${Date.now()}` : `ch_${auth.currentUser.uid}`;
-            
+            const title = document.getElementById('vid-title').value;
+            const url = document.getElementById('vid-url').value;
+
+            if(!parseYoutubeId(url)) {
+                alert("Please input a valid standard YouTube video share watch link URL format.");
+                return;
+            }
+
+            // Create timestamp specific ID tags for admin testing to ensure keys never lock or overlap
+            const videoId = isAdmin ? `vid_${auth.currentUser.uid}_${Date.now()}` : `vid_${auth.currentUser.uid}`;
+
             try {
-                await sd(d(db, "youtubers", channelId), {
-                    name: auth.currentUser.displayName, 
-                    logoUrl: auth.currentUser.photoURL, 
-                    ign: ign,
-                    style: style,
-                    votes: 0,
-                    ownerUid: auth.currentUser.uid
+                await sd(d(db, "videos", videoId), {
+                    title: title,
+                    url: url,
+                    creatorName: auth.currentUser.displayName,
+                    creatorAvatar: auth.currentUser.photoURL,
+                    ownerUid: auth.currentUser.uid,
+                    createdAt: Date.now()
                 });
 
                 if (!isAdmin) {
-                    await ud(d(db, "users", auth.currentUser.uid), { ownedChannelId: channelId });
-                    currentUserData.ownedChannelId = channelId;
+                    const userRef = d(db, "users", auth.currentUser.uid);
+                    await sd(userRef, { postedVideoId: videoId }, { merge: true });
+                    currentUserData.postedVideoId = videoId;
                 }
-                closeRegisterModal();
+
+                document.getElementById('video-submission-form').reset();
+                closeVideoModal();
             } catch (err) {
                 console.error(err);
             }
         });
 
-        // Upvote Function
-        window.castVote = async function(channelId) {
-            if (!auth.currentUser || !currentUserData) {
-                alert("Please log in with Google to cast votes.");
-                return;
-            }
+        // ADMIN TERMINATION SYSTEM ROUTINE
+        window.adminDeleteVideo = async function(videoId, event) {
+            if(event) event.stopPropagation();
+            if(!isAdmin) return;
 
-            // Admins possess infinite upvote capability
-            if (!isAdmin && currentUserData.votesLeft <= 0) {
-                alert("You are out of votes for this cycle!");
-                return;
-            }
-
-            // Admins bypass self-vote locks
-            if (!isAdmin && currentUserData.ownedChannelId === channelId) {
-                alert("You cannot upvote your own channel entry!");
-                return;
-            }
-
-            try {
-                if (!isAdmin) {
-                    await ud(d(db, "users", auth.currentUser.uid), { votesLeft: inc(-1) });
-                    currentUserData.votesLeft -= 1;
-                    updateVoteBadgeUI();
+            if(confirm("Admin Panel Control Mode: Are you sure you want to permanently remove this trending community video item?")) {
+                try {
+                    await dd(d(db, "videos", videoId));
+                } catch(e) {
+                    console.error("Failed executing administrator remove request action:", e);
                 }
-
-                await ud(d(db, "youtubers", channelId), { votes: inc(1) });
-            } catch (err) {
-                console.error(err);
             }
         };
 
-        // ADMIN CAPABILITY ROUTINE MODULES
-        window.adminResetVotes = async function(channelId, event) {
-            if(event) event.stopPropagation();
-            if(!isAdmin) return;
-            if(confirm("Admin Mode: Are you sure you want to reset this profile score back to 0 votes?")) {
-                try {
-                    await ud(d(db, "youtubers", channelId), { votes: 0 });
-                } catch(e) { console.error(e); }
-            }
-        };
-
-        window.adminDeleteChannel = async function(channelId, event) {
-            if(event) event.stopPropagation();
-            if(!isAdmin) return;
-            if(confirm("Admin Mode: Permanently delete this profile channel card from directory database listing indexes?")) {
-                try {
-                    await dd(d(db, "youtubers", channelId));
-                } catch(e) { console.error(e); }
-            }
-        };
-
-        window.openRegisterModal = function() { document.getElementById('register-modal').classList.remove('hidden'); }
-        window.closeRegisterModal = function() { document.getElementById('register-modal').classList.add('hidden'); }
+        window.openVideoModal = function() { document.getElementById('video-modal').classList.remove('hidden'); }
+        window.closeVideoModal = function() { document.getElementById('video-modal').classList.add('hidden'); }
     </script>
 </body>
 </html>
