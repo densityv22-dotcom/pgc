@@ -43,10 +43,10 @@
             </div>
             
             <div class="flex items-center gap-6 animate__animated animate__fadeInRight">
-                <!-- Fixed Navigation Routing Connections -->
+                <!-- Hardcoded Explicit File Routing to Break Loops -->
                 <nav class="flex items-center gap-6">
-                    <a href="./" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Leaderboard</a>
-                    <a href="videos" class="text-sm font-bold text-red-500 border-b-2 border-red-500 pb-1">Trending Videos</a>
+                    <a href="./index.html" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Leaderboard</a>
+                    <a href="./videos.html" class="text-sm font-bold text-red-500 border-b-2 border-red-500 pb-1">Trending Videos</a>
                 </nav>
 
                 <button id="btn-add-video" onclick="openVideoModal()" class="hidden items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-sm font-semibold transition-all border border-slate-700/50 hover:border-red-500/50">
@@ -180,7 +180,6 @@
                     document.getElementById('user-role-badge').className = `font-medium flex items-center gap-1 ${isAdmin ? 'text-red-500' : 'text-emerald-400'}`;
                     document.getElementById('user-role-badge').textContent = isAdmin ? "ADMIN" : "STANDARD";
 
-                    // Admins bypass standard restrictions to post infinite videos freely
                     if (isAdmin || !currentUserData.postedVideoId) {
                         document.getElementById('btn-add-video').classList.remove('hidden');
                         document.getElementById('btn-add-video').classList.add('flex');
@@ -208,14 +207,12 @@
             buildVideosUI();
         });
 
-        // YouTube ID Parser Utility Helper Method
         function parseYoutubeId(url) {
             const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
             const match = url.match(regExp);
             return (match && match[2].length === 11) ? match[2] : null;
         }
 
-        // Render Page Layout
         function buildVideosUI() {
             const grid = document.getElementById('video-grid');
             grid.innerHTML = '';
@@ -225,7 +222,6 @@
                 return;
             }
 
-            // Order listings by reverse chronological creation sequence
             let sortedVideos = [...globalVideosCache].sort((a,b) => b.createdAt - a.createdAt);
 
             sortedVideos.forEach(video => {
@@ -234,7 +230,6 @@
 
                 const thumbUrl = `https://img.youtube.com/vi/${ytid}/maxresdefault.jpg`;
 
-                // Admin action element dashboard controls configuration injector module
                 let adminDeleteBtn = "";
                 if (isAdmin) {
                     adminDeleteBtn = `
@@ -248,7 +243,6 @@
                     <div class="video-card bg-slate-900/40 border border-slate-800/80 rounded-2xl overflow-hidden flex flex-col relative animate__animated animate__fadeInUp">
                         ${adminDeleteBtn}
                         
-                        <!-- Thumbnail Wrapper -->
                         <a href="${video.url}" target="_blank" class="block relative group aspect-video overflow-hidden bg-slate-950">
                             <img src="${thumbUrl}" alt="Thumbnail" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onerror="this.src='https://img.youtube.com/vi/${ytid}/hqdefault.jpg'">
                             <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -258,7 +252,6 @@
                             </div>
                         </a>
 
-                        <!-- Metadata Info Container -->
                         <div class="p-5 flex-grow flex flex-col justify-between">
                             <div>
                                 <h4 class="font-bold text-white text-base line-clamp-2 hover:text-red-400 transition-colors">
@@ -279,7 +272,6 @@
             });
         }
 
-        // Form Submission Processor Route
         document.getElementById('video-submission-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!auth.currentUser || !currentUserData) return;
@@ -297,7 +289,6 @@
                 return;
             }
 
-            // Create timestamp specific ID tags for admin testing to ensure keys never lock or overlap
             const videoId = isAdmin ? `vid_${auth.currentUser.uid}_${Date.now()}` : `vid_${auth.currentUser.uid}`;
 
             try {
@@ -323,7 +314,6 @@
             }
         });
 
-        // ADMIN TERMINATION SYSTEM ROUTINE
         window.adminDeleteVideo = async function(videoId, event) {
             if(event) event.stopPropagation();
             if(!isAdmin) return;
