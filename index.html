@@ -5,178 +5,113 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PK Craft Hub | Live Voting Directory</title>
     <meta name="google-site-verification" content="rZ6D-OMLgqRw6SOFJanKTfowRrYiSUWr2CWue3IObQ4" />
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&display=swap');
-        
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #060b11 !important; 
-            overflow-x: hidden;
-        }
-        
-        /* Premium Pakistani Emerald Green Theme */
-        .text-gradient { 
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; 
-            -webkit-background-clip: text !important; 
-            -webkit-text-fill-color: transparent !important; 
-        }
-        
-        .creator-card { 
-            transition: transform 0.2s ease, box-shadow 0.2s ease; 
-        }
-        .creator-card:hover { 
-            transform: translateY(-4px); 
-            border-color: rgba(16, 185, 129, 0.4) !important;
-            box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.1) !important;
-        }
-        
-        .shimmer {
-            background: linear-gradient(90deg, #0f172a 25%, #1e293b 50%, #0f172a 75%);
-            background-size: 200% 100%;
-            animation: loading-shimmer 1.5s infinite linear;
-        }
-        @keyframes loading-shimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-
-        /* 4K & Desktop Custom Animated Cursor */
-        @media (min-width: 1024px) {
-            body { cursor: none !important; }
-            a, button, select, input { cursor: none !important; }
-            #custom-cursor {
-                width: 8px;
-                height: 8px;
-                background-color: #10b981 !important;
-                border-radius: 50%;
-                position: fixed;
-                transform: translate(-50%, -50%);
-                pointer-events: none;
-                z-index: 9999;
-                transition: width 0.2s, height 0.2s;
-                box-shadow: 0 0 10px #10b981, 0 0 20px #10b981 !important;
-            }
-            #custom-cursor-blur {
-                width: 32px;
-                height: 32px;
-                border: 2px solid rgba(16, 185, 129, 0.4) !important;
-                border-radius: 50%;
-                position: fixed;
-                transform: translate(-50%, -50%);
-                pointer-events: none;
-                z-index: 9998;
-                transition: transform 0.08s ease-out;
-            }
-        }
-    </style>
+    <!-- Custom External Cache-Busting Stylesheet Linking -->
+    <link rel="stylesheet" href="style.css?v=2.6">
 </head>
-<body class="text-slate-100 min-h-screen flex flex-col selection:bg-emerald-600 selection:text-white font-extrabold bg-[#060b11]">
+<body>
 
     <!-- Custom Cursor Target Elements -->
-    <div id="custom-cursor" class="hidden lg:block"></div>
-    <div id="custom-cursor-blur" class="hidden lg:block"></div>
+    <div id="custom-cursor"></div>
+    <div id="custom-cursor-blur"></div>
 
     <!-- Header / Navbar -->
-    <header class="border-b border-slate-800/80 bg-slate-950/70 backdrop-blur-md sticky top-0 z-40">
-        <div class="max-w-[2560px] mx-auto px-4 sm:px-8 lg:px-16 h-20 flex items-center justify-between">
-            <div class="flex items-center gap-3 animate__animated animate__fadeIn">
-                <div class="bg-gradient-to-tr from-emerald-600 to-emerald-400 p-2.5 rounded-xl text-slate-950 shadow-lg shadow-emerald-500/20">
-                    <i class="fa-solid fa-cubes text-xl"></i>
+    <header>
+        <div class="max-width-container nav-container">
+            <div class="logo-area animate__animated animate__fadeIn">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-cubes"></i>
                 </div>
-                <span class="font-extrabold text-2xl tracking-tight text-white">PK<span class="text-emerald-400">Craft</span>Hub</span>
+                <span class="logo-text">PK<span class="logo-accent">Craft</span>Hub</span>
             </div>
             
-            <div class="flex items-center gap-4 sm:gap-6 animate__animated animate__fadeIn">
-                <nav class="hidden md:flex items-center gap-6 lg:gap-8">
-                    <a href="./index.html" class="text-sm font-extrabold text-emerald-400 border-b-2 border-emerald-400 pb-1 tracking-wide">Leaderboard</a>
-                    <a href="./videos.html" class="text-sm font-bold text-slate-400 hover:text-white transition-colors tracking-wide">Trending</a>
+            <div class="nav-actions animate__animated animate__fadeIn">
+                <nav>
+                    <a href="./index.html" class="link-active">Leaderboard</a>
+                    <a href="./videos.html" class="link-inactive">Trending</a>
                 </nav>
 
-                <button id="btn-register-channel" onclick="openRegisterModal()" class="hidden items-center gap-2 px-4 py-2.5 rounded-full bg-slate-900 hover:bg-slate-800 text-xs sm:text-sm font-extrabold transition-all border border-slate-800 hover:border-emerald-500/50 shadow-md">
-                    <i class="fa-solid fa-square-plus text-emerald-400"></i> <span>Register Channel</span>
+                <button id="btn-register-channel" onclick="openRegisterModal()" class="btn-secondary hidden">
+                    <i class="fa-solid fa-square-plus"></i> <span>Register Channel</span>
                 </button>
 
-                <!-- Fully Responsive & 4K Adaptive Login Structure -->
-                <button id="btn-login" class="flex items-center justify-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs sm:text-sm lg:text-base font-extrabold transition-all shadow-lg shadow-emerald-500/20 active:scale-95 max-w-full truncate whitespace-nowrap">
-                    <i class="fa-brands fa-google text-sm"></i> Login With Google
+                <button id="btn-login" class="btn-primary">
+                    <i class="fa-brands fa-google"></i> Login With Google
                 </button>
 
-                <div id="user-profile-badge" class="hidden items-center gap-3 bg-slate-900 p-1.5 pr-5 rounded-full border border-slate-800 shadow-xl max-w-[220px] sm:max-w-xs">
-                    <img id="user-avatar" src="" alt="Avatar" class="w-9 h-9 rounded-full bg-slate-800 object-cover border border-emerald-500/30">
-                    <div class="text-xs truncate">
-                        <p id="user-display-name" class="font-extrabold text-white truncate">Loading...</p>
-                        <p id="user-vote-status" class="text-emerald-400 font-bold flex items-center gap-1 mt-0.5"></p>
+                <div id="user-profile-badge" class="user-profile-badge hidden">
+                    <img id="user-avatar" src="" alt="Avatar" class="user-avatar">
+                    <div class="user-info-text">
+                        <p id="user-display-name" class="user-display-name">Loading...</p>
+                        <p id="user-vote-status" class="user-vote-status"></p>
                     </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="flex-grow max-w-[2560px] w-full mx-auto px-4 sm:px-8 lg:px-16 py-12">
+    <!-- Main Content Grid -->
+    <main class="max-width-container">
         
-        <!-- Hero Section -->
-        <div class="text-center max-w-3xl mx-auto mb-16 animate__animated animate__fadeIn">
-            <span class="bg-emerald-500/10 text-emerald-400 text-xs font-extrabold px-4 py-1.5 rounded-full border border-emerald-500/20 tracking-widest uppercase inline-block mb-4 shadow-sm">Community Hub v2.5</span>
-            <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white mb-5 leading-tight">
-                Pakistani Minecraft <br><span class="text-gradient">Creator Leaderboard</span>
-            </h1>
+        <!-- Hero Section Title -->
+        <div class="hero-section animate__animated animate__fadeIn">
+            <span class="version-pill">Community Hub v2.5</span>
+            <h1>Pakistani Minecraft <br><span class="text-gradient">Creator Leaderboard</span></h1>
         </div>
 
-        <!-- Search Bar -->
-        <div class="max-w-xl mx-auto mb-16 animate__animated animate__fadeIn">
-            <div class="relative group">
-                <i class="fa-solid fa-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 transition-colors group-focus-within:text-emerald-400"></i>
-                <input type="text" id="search-bar" placeholder="Search YouTuber or In-game Name..." class="w-full bg-slate-950 border border-slate-800/80 rounded-full pl-14 pr-6 py-4 text-sm sm:text-base text-white focus:outline-none focus:border-emerald-500/60 transition-all placeholder:text-slate-600 shadow-2xl">
+        <!-- Directory Search Bar -->
+        <div class="search-container animate__animated animate__fadeIn">
+            <div class="search-wrapper">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="search-bar" placeholder="Search YouTuber or In-game Name...">
             </div>
         </div>
 
-        <!-- 🏆 FIXED TOP 3 PODIUM HERO SHOWCASE (#1 Left, #2 Middle, #3 Right) -->
-        <div id="podium-container" class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-16 items-end"></div>
+        <!-- 🏆 TOP 3 SHOWCASE PODIUM (#1 Left, #2 Middle, #3 Right Order) -->
+        <div id="podium-container" class="animate__animated animate__fadeIn"></div>
 
-        <div class="border-t border-slate-900 my-12"></div>
+        <div class="separator"></div>
 
-        <!-- Directory Standings -->
-        <h3 class="text-lg font-extrabold text-slate-400 mb-8 flex items-center gap-2 tracking-wide"><i class="fa-solid fa-list-ol text-emerald-400"></i> Full Directory Standings</h3>
-        <div id="creator-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            <div class="shimmer h-44 rounded-2xl border border-slate-800/50"></div>
-            <div class="shimmer h-44 rounded-2xl border border-slate-800/50"></div>
-            <div class="shimmer h-44 rounded-2xl border border-slate-800/50"></div>
-            <div class="shimmer h-44 rounded-2xl border border-slate-800/50"></div>
+        <!-- Full Layout Grid Standings -->
+        <h3 class="section-heading"><i class="fa-solid fa-list-ol"></i> Full Directory Standings</h3>
+        <div id="creator-grid">
+            <div class="shimmer"></div>
+            <div class="shimmer"></div>
+            <div class="shimmer"></div>
+            <div class="shimmer"></div>
         </div>
     </main>
 
-    <!-- Modal Template Box -->
-    <div id="register-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-950 border border-slate-800/80 rounded-3xl max-w-md w-full p-7 shadow-2xl relative">
-            <button onclick="closeRegisterModal()" class="absolute right-6 top-6 text-slate-500 hover:text-slate-300 transition-colors">
-                <i class="fa-solid fa-xmark text-xl"></i>
+    <!-- Connection Entry Modal Overlay Box -->
+    <div id="register-modal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <button onclick="closeRegisterModal()" class="modal-close-btn">
+                <i class="fa-solid fa-xmark"></i>
             </button>
-            <div class="mb-6">
-                <h3 class="text-2xl font-extrabold text-white flex items-center gap-2"><i class="fa-brands fa-youtube text-emerald-400"></i> Connect Profile</h3>
+            <div class="modal-header">
+                <h3><i class="fa-brands fa-youtube"></i> Connect Profile</h3>
             </div>
-            <form id="channel-registration-form" class="space-y-5">
-                <div>
-                    <label class="block text-xs font-extrabold uppercase tracking-widest text-slate-400 mb-2">Minecraft IGN</label>
-                    <input type="text" id="reg-ign" required placeholder="e.g., GetBetterLt3" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 font-bold">
+            <form id="channel-registration-form">
+                <div class="form-group">
+                    <label class="form-label">Minecraft IGN</label>
+                    <input type="text" id="reg-ign" required placeholder="e.g., GetBetterLt3" class="form-input">
                 </div>
-                <div>
-                    <label class="block text-xs font-extrabold uppercase tracking-widest text-slate-400 mb-2">Playstyle Focus</label>
-                    <select id="reg-style" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 text-slate-200 font-bold">
+                <div class="form-group">
+                    <label class="form-label">Playstyle Focus</label>
+                    <select id="reg-style" class="form-select">
                         <option value="Java / Lifesteal">Java / Lifesteal SMP</option>
                         <option value="Bedrock / Factions">Bedrock / Factions</option>
                         <option value="Speedrunner">Speedrunner</option>
                         <option value="PvP Minigames">PvP Minigames</option>
                     </select>
                 </div>
-                <button type="submit" class="w-full bg-gradient-to-r from-emerald-600 to-emerald-400 text-slate-950 font-extrabold py-3.5 rounded-xl transition-all text-sm shadow-md hover:brightness-110 tracking-wider uppercase mt-2">Link Profile</button>
+                <button type="submit" class="btn-submit">Link Profile</button>
             </form>
         </div>
     </div>
 
+    <!-- Framework & Application Integrations -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -201,7 +136,7 @@
         let globalCreatorsCache = [];
         let isAdmin = false;
 
-        // Custom Green Smooth Moving Cursor Script
+        // Custom Green Smooth Moving Cursor Script Component Logic
         const cursor = document.getElementById('custom-cursor');
         const cursorBlur = document.getElementById('custom-cursor-blur');
         if(cursor && cursorBlur) {
@@ -250,7 +185,7 @@
                     }
                     
                     if (isAdmin || !currentUserData.ownedChannelId) {
-                        document.getElementById('btn-register-channel').className = "flex items-center gap-2 px-5 py-2 rounded-full bg-slate-900 text-sm font-extrabold border border-slate-800 hover:border-emerald-500/40 transition-all";
+                        document.getElementById('btn-register-channel').classList.remove('hidden');
                     } else {
                         document.getElementById('btn-register-channel').classList.add('hidden');
                     }
@@ -270,10 +205,10 @@
         function updateVoteBadgeUI() {
             if (!currentUserData) return;
             const role = currentUserData.role || 'standard';
-            let badgeStyle = "bg-emerald-400 text-slate-950";
-            if (role === 'premium') badgeStyle = "bg-purple-600 text-white";
-            if (role === 'admin') badgeStyle = "bg-emerald-600 text-white";
-            document.getElementById('user-vote-status').innerHTML = `<span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold ${badgeStyle}">${role.toUpperCase()}</span> <span class="text-slate-400 ml-1 font-bold">(${isAdmin ? "∞" : currentUserData.votesLeft} Left)</span>`;
+            let badgeStyle = "badge-standard";
+            if (role === 'premium') badgeStyle = "badge-premium";
+            if (role === 'admin') badgeStyle = "badge-admin";
+            document.getElementById('user-vote-status').innerHTML = `<span class="badge-role ${badgeStyle}">${role.toUpperCase()}</span> <span style="color:#94a3b8; font-weight:700; margin-left:4px;">(${isAdmin ? "∞" : currentUserData.votesLeft} Left)</span>`;
         }
 
         os(coll(db, "youtubers"), (snapshot) => {
@@ -295,7 +230,7 @@
 
             if (filtered.length === 0) {
                 podiumContainer.innerHTML = '';
-                grid.innerHTML = `<div class="col-span-full text-center py-16 text-slate-600 text-sm font-bold">No channels matched.</div>`;
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 4rem 0; color:#475569; font-size:0.875rem;">No channels matched.</div>`;
                 return;
             }
 
@@ -307,22 +242,22 @@
             
             top3.forEach((creator, index) => {
                 const isSelf = currentUserData && currentUserData.ownedChannelId === creator.id;
-                let cGlow = index === 0 ? "border-emerald-500 bg-slate-950 shadow-2xl ring-1 ring-emerald-500/20 shadow-emerald-500/10" : "border-slate-800/80 bg-slate-950/40";
-                let mCol = index === 0 ? "bg-emerald-400 text-slate-950" : (index === 1 ? "bg-slate-300 text-slate-950" : "bg-emerald-800 text-white");
+                let cardClass = index === 0 ? "podium-card first-place" : "podium-card";
+                let badgeClass = index === 0 ? "rank-badge rank-badge-1" : (index === 1 ? "rank-badge rank-badge-2" : "rank-badge rank-badge-3");
                 
-                let adminCtrls = isAdmin ? `<div class="absolute top-3 right-3 flex gap-1.5 z-20"><button onclick="window.adminResetVotes('${creator.id}', event)" class="w-6 h-6 rounded-full bg-slate-900 text-emerald-400 text-[10px] flex items-center justify-center border border-slate-800"><i class="fa-solid fa-rotate-left"></i></button><button onclick="window.adminDeleteChannel('${creator.id}', event)" class="w-6 h-6 rounded-full bg-slate-900 text-red-500 text-[10px] flex items-center justify-center border border-slate-800"><i class="fa-solid fa-trash-can"></i></button></div>` : "";
+                let adminCtrls = isAdmin ? `<div class="admin-controls"><button onclick="window.adminResetVotes('${creator.id}', event)" class="admin-btn reset"><i class="fa-solid fa-rotate-left"></i></button><button onclick="window.adminDeleteChannel('${creator.id}', event)" class="admin-btn delete"><i class="fa-solid fa-trash-can"></i></button></div>` : "";
 
                 let slotHtml = `
-                    <div class="border ${cGlow} rounded-3xl p-5 flex flex-col items-center relative overflow-hidden w-full transition-transform duration-300 hover:-translate-y-1">
+                    <div class="${cardClass}">
                         ${adminCtrls}
-                        <div class="absolute top-3 left-3 ${mCol} rounded-full font-extrabold text-[11px] w-6 h-6 flex items-center justify-center shadow-md">#${index+1}</div>
-                        <img src="${creator.logoUrl}" class="w-16 h-16 rounded-2xl object-cover mt-3 border border-slate-800 bg-slate-900 shadow-inner" onerror="this.src='https://mc-heads.net/avatar/steve'">
-                        <h4 class="font-extrabold text-white text-base mt-3 truncate max-w-full tracking-wide">${creator.name}</h4>
-                        <p class="text-xs text-slate-400 mt-0.5 font-bold">IGN: <span class="text-emerald-400 font-extrabold">${creator.ign}</span></p>
-                        <span class="mt-2 text-[10px] bg-slate-900 text-emerald-400/90 px-3 py-1 rounded-full font-extrabold border border-emerald-500/10 tracking-wide uppercase">${creator.style || 'Java / Lifesteal'}</span>
-                        <div class="w-full border-t border-slate-900 mt-4 pt-4 flex items-center justify-between text-xs">
-                            <div><span class="text-[10px] text-slate-500 block font-bold uppercase tracking-wider">Score Balance</span><span class="font-extrabold text-white flex items-center gap-1 text-sm"><i class="fa-solid fa-fire text-emerald-400"></i>${creator.votes}</span></div>
-                            ${(isSelf && !isAdmin) ? `<button disabled class="bg-slate-900 text-slate-600 px-4 py-1.5 rounded-full text-xs font-extrabold border border-slate-800 cursor-not-allowed">Blocked</button>` : `<button onclick="window.castVote('${creator.id}')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-4 py-1.5 rounded-full text-xs font-extrabold active:scale-95 transition-all shadow-md">VOTE</button>`}
+                        <div class="${badgeClass}">#${index+1}</div>
+                        <img src="${creator.logoUrl}" class="podium-avatar" onerror="this.src='https://mc-heads.net/avatar/steve'">
+                        <h4 class="podium-name">${creator.name}</h4>
+                        <p class="podium-ign">IGN: <span>${creator.ign}</span></p>
+                        <span class="playstyle-tag">${creator.style || 'Java / Lifesteal'}</span>
+                        <div class="podium-footer">
+                            <div><span class="score-title">Score Balance</span><span class="score-value"><i class="fa-solid fa-fire"></i>${creator.votes}</span></div>
+                            ${(isSelf && !isAdmin) ? `<button disabled class="btn-blocked">Blocked</button>` : `<button onclick="window.castVote('${creator.id}')" class="btn-vote">VOTE</button>`}
                         </div>
                     </div>
                 `;
@@ -339,22 +274,22 @@
 
             others.forEach((creator, index) => {
                 const isSelf = currentUserData && currentUserData.ownedChannelId === creator.id;
-                let adminRow = isAdmin ? `<button onclick="window.adminResetVotes('${creator.id}', event)" class="w-6 h-6 text-emerald-400"><i class="fa-solid fa-rotate-left text-[11px]"></i></button><button onclick="window.adminDeleteChannel('${creator.id}', event)" class="w-6 h-6 text-red-500"><i class="fa-solid fa-trash-can text-[11px]"></i></button>` : "";
+                let adminRow = isAdmin ? `<button onclick="window.adminResetVotes('${creator.id}', event)" style="background:none; width:24px; height:24px; color:#34d399;"><i class="fa-solid fa-rotate-left" style="font-size:11px;"></i></button><button onclick="window.adminDeleteChannel('${creator.id}', event)" style="background:none; width:24px; height:24px; color:#ef4444;"><i class="fa-solid fa-trash-can" style="font-size:11px;"></i></button>` : "";
 
                 grid.innerHTML += `
-                    <div class="creator-card border border-slate-800/70 bg-slate-950/40 rounded-2xl p-4 flex items-center justify-between">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <span class="font-extrabold text-slate-600 text-xs w-5">#${index + 4}</span>
-                            <img src="${creator.logoUrl}" class="w-11 h-11 rounded-xl object-cover border border-slate-800 bg-slate-900" onerror="this.src='https://mc-heads.net/avatar/steve'">
-                            <div class="min-w-0">
-                                <h4 class="font-extrabold text-white text-xs sm:text-sm truncate tracking-wide">${creator.name}</h4>
-                                <p class="text-[11px] text-slate-400 truncate font-bold">IGN: ${creator.ign}</p>
+                    <div class="creator-card">
+                        <div class="card-left-group">
+                            <span class="card-rank-num">#${index + 4}</span>
+                            <img src="${creator.logoUrl}" class="card-avatar" onerror="this.src='https://mc-heads.net/avatar/steve'">
+                            <div class="card-text-block">
+                                <h4 class="card-title">${creator.name}</h4>
+                                <p class="card-subtitle">IGN: ${creator.ign}</p>
                             </div>
                         </div>
-                        <div class="flex items-center gap-3 shrink-0">
+                        <div class="card-right-group">
                             ${adminRow}
-                            <span class="text-xs sm:text-sm font-extrabold text-slate-200 flex items-center gap-0.5"><i class="fa-solid fa-fire text-emerald-400 text-xs"></i>${creator.votes}</span>
-                            ${(isSelf && !isAdmin) ? `<button disabled class="bg-slate-900 text-slate-600 px-3 py-1 rounded-full text-[11px] font-extrabold border border-slate-800 cursor-not-allowed">Blocked</button>` : `<button onclick="window.castVote('${creator.id}')" class="bg-slate-900 hover:bg-emerald-500 hover:text-slate-950 text-slate-300 px-3 py-1 rounded-full text-[11px] font-extrabold transition-all border border-slate-800">VOTE</button>`}
+                            <span class="card-score"><i class="fa-solid fa-fire"></i>${creator.votes}</span>
+                            ${(isSelf && !isAdmin) ? `<button disabled class="btn-blocked">Blocked</button>` : `<button onclick="window.castVote('${creator.id}')" class="btn-secondary" style="padding:0.35rem 0.85rem; font-size:11px;">VOTE</button>`}
                         </div>
                     </div>
                 `;
