@@ -13,15 +13,15 @@
         
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #060b11; 
+            background-color: #060b11 !important; 
             overflow-x: hidden;
         }
         
         /* Premium Pakistani Emerald Green Theme */
         .text-gradient { 
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%); 
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent; 
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; 
+            -webkit-background-clip: text !important; 
+            -webkit-text-fill-color: transparent !important; 
         }
         
         .creator-card { 
@@ -29,8 +29,8 @@
         }
         .creator-card:hover { 
             transform: translateY(-4px); 
-            border-color: rgba(16, 185, 129, 0.4);
-            box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.4) !important;
+            box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.1) !important;
         }
         
         .shimmer {
@@ -45,24 +45,24 @@
 
         /* 4K & Desktop Custom Animated Cursor */
         @media (min-width: 1024px) {
-            body { cursor: none; }
+            body { cursor: none !important; }
             a, button, select, input { cursor: none !important; }
             #custom-cursor {
                 width: 8px;
                 height: 8px;
-                background-color: #10b981;
+                background-color: #10b981 !important;
                 border-radius: 50%;
                 position: fixed;
                 transform: translate(-50%, -50%);
                 pointer-events: none;
                 z-index: 9999;
                 transition: width 0.2s, height 0.2s;
-                box-shadow: 0 0 10px #10b981, 0 0 20px #10b981;
+                box-shadow: 0 0 10px #10b981, 0 0 20px #10b981 !important;
             }
             #custom-cursor-blur {
                 width: 32px;
                 height: 32px;
-                border: 2px solid rgba(16, 185, 129, 0.4);
+                border: 2px solid rgba(16, 185, 129, 0.4) !important;
                 border-radius: 50%;
                 position: fixed;
                 transform: translate(-50%, -50%);
@@ -73,7 +73,7 @@
         }
     </style>
 </head>
-<body class="text-slate-100 min-h-screen flex flex-col selection:bg-emerald-600 selection:text-white font-extrabold">
+<body class="text-slate-100 min-h-screen flex flex-col selection:bg-emerald-600 selection:text-white font-extrabold bg-[#060b11]">
 
     <!-- Custom Cursor Target Elements -->
     <div id="custom-cursor" class="hidden lg:block"></div>
@@ -134,7 +134,7 @@
             </div>
         </div>
 
-        <!-- 🏆 CORRECTED TOP 3 PODIUM HERO SHOWCASE -->
+        <!-- 🏆 FIXED TOP 3 PODIUM HERO SHOWCASE (#1 Left, #2 Middle, #3 Right) -->
         <div id="podium-container" class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-16 items-end"></div>
 
         <div class="border-t border-slate-900 my-12"></div>
@@ -303,7 +303,6 @@
             let others = filtered.slice(3);
             
             let podiumHtml = ["", "", ""];
-            // FIXED: Sequential Left-to-Right Ordering (#1, #2, #3) to prevent the badge position conflict
             let orderMap = [0, 1, 2];
             
             top3.forEach((creator, index) => {
