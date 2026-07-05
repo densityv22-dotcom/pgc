@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&display=swap');
         
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
@@ -43,7 +43,7 @@
             100% { background-position: -200% 0; }
         }
 
-        /* 4K & Desktop Custom Cursor */
+        /* 4K & Desktop Custom Animated Cursor */
         @media (min-width: 1024px) {
             body { cursor: none; }
             a, button, select, input { cursor: none !important; }
@@ -73,7 +73,7 @@
         }
     </style>
 </head>
-<body class="text-slate-100 min-h-screen flex flex-col selection:bg-emerald-600 selection:text-white font-bold">
+<body class="text-slate-100 min-h-screen flex flex-col selection:bg-emerald-600 selection:text-white font-extrabold">
 
     <!-- Custom Cursor Target Elements -->
     <div id="custom-cursor" class="hidden lg:block"></div>
@@ -134,7 +134,7 @@
             </div>
         </div>
 
-        <!-- 🏆 TOP 3 PODIUM HERO SHOWCASE -->
+        <!-- 🏆 CORRECTED TOP 3 PODIUM HERO SHOWCASE -->
         <div id="podium-container" class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-16 items-end"></div>
 
         <div class="border-t border-slate-900 my-12"></div>
@@ -303,11 +303,12 @@
             let others = filtered.slice(3);
             
             let podiumHtml = ["", "", ""];
-            let orderMap = [1, 0, 2];
+            // FIXED: Sequential Left-to-Right Ordering (#1, #2, #3) to prevent the badge position conflict
+            let orderMap = [0, 1, 2];
             
             top3.forEach((creator, index) => {
                 const isSelf = currentUserData && currentUserData.ownedChannelId === creator.id;
-                let cGlow = index === 0 ? "border-emerald-500/40 bg-slate-950 shadow-2xl ring-1 ring-emerald-500/20" : "border-slate-800/80 bg-slate-950/40";
+                let cGlow = index === 0 ? "border-emerald-500 bg-slate-950 shadow-2xl ring-1 ring-emerald-500/20 shadow-emerald-500/10" : "border-slate-800/80 bg-slate-950/40";
                 let mCol = index === 0 ? "bg-emerald-400 text-slate-950" : (index === 1 ? "bg-slate-300 text-slate-950" : "bg-emerald-800 text-white");
                 
                 let adminCtrls = isAdmin ? `<div class="absolute top-3 right-3 flex gap-1.5 z-20"><button onclick="window.adminResetVotes('${creator.id}', event)" class="w-6 h-6 rounded-full bg-slate-900 text-emerald-400 text-[10px] flex items-center justify-center border border-slate-800"><i class="fa-solid fa-rotate-left"></i></button><button onclick="window.adminDeleteChannel('${creator.id}', event)" class="w-6 h-6 rounded-full bg-slate-900 text-red-500 text-[10px] flex items-center justify-center border border-slate-800"><i class="fa-solid fa-trash-can"></i></button></div>` : "";
