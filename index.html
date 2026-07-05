@@ -540,18 +540,34 @@
 
         .hidden { display: none !important; }
 
+        /* FIXED EMERALD CUSTOM CURSOR SYSTEM */
         @media (min-width: 1024px) {
-            body { cursor: none !important; }
-            a, button, select, input { cursor: none !important; }
+            body, a, button, select, input, [onclick] { 
+                cursor: none !important; 
+            }
             #custom-cursor {
-                width: 8px; height: 8px; background-color: #10b981 !important; border-radius: 50%;
-                position: fixed; transform: translate(-50%, -50%); pointer-events: none; z-index: 9999;
-                box-shadow: 0 0 10px #10b981, 0 0 20px #10b981 !important;
+                width: 8px !important; 
+                height: 8px !important; 
+                background-color: #10b981 !important; 
+                border-radius: 50% !important;
+                position: fixed !important; 
+                transform: translate(-50%, -50%) !important; 
+                pointer-events: none !important; 
+                z-index: 99999 !important;
+                box-shadow: 0 0 10px #10b981, 0 0 20px #059669 !important;
+                display: block !important;
             }
             #custom-cursor-blur {
-                width: 32px; height: 32px; border: 2px solid rgba(16, 185, 129, 0.4) !important; border-radius: 50%;
-                position: fixed; transform: translate(-50%, -50%); pointer-events: none; z-index: 9998;
-                transition: transform 0.08s ease-out;
+                width: 32px !important; 
+                height: 32px !important; 
+                border: 2px solid rgba(16, 185, 129, 0.6) !important; 
+                border-radius: 50% !important;
+                position: fixed !important; 
+                transform: translate(-50%, -50%) !important; 
+                pointer-events: none !important; 
+                z-index: 99998 !important;
+                transition: transform 0.08s ease-out !important;
+                display: block !important;
             }
         }
     </style>
@@ -672,10 +688,8 @@
             document.addEventListener('mousemove', (e) => {
                 cursor.style.left = e.clientX + 'px';
                 cursor.style.top = e.clientY + 'px';
-                setTimeout(() => {
-                    cursorBlur.style.left = e.clientX + 'px';
-                    cursorBlur.style.top = e.clientY + 'px';
-                }, 30);
+                cursorBlur.style.left = e.clientX + 'px';
+                cursorBlur.style.top = e.clientY + 'px';
             });
         }
 
