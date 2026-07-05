@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&display=swap');
+
+body { 
+    font-family: 'Plus Jakarta Sans', sans-serif; 
+    background-color: #060b11 !important; 
+    overflow-x: hidden;
+}
+
+/* Premium Pakistani Emerald Green Theme */
+.text-gradient { 
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; 
+    -webkit-background-clip: text !important; 
+    -webkit-text-fill-color: transparent !important; 
+}
+
+.creator-card { 
+    transition: transform 0.2s ease, box-shadow 0.2s ease; 
+}
+
+.creator-card:hover { 
+    transform: translateY(-4px); 
+    border-color: rgba(16, 185, 129, 0.4) !important;
+    box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.1) !important;
+}
+
+.shimmer {
+    background: linear-gradient(90deg, #0f172a 25%, #1e293b 50%, #0f172a 75%);
+    background-size: 200% 100%;
+    animation: loading-shimmer 1.5s infinite linear;
+}
+
+@keyframes loading-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* 4K & Desktop Custom Animated Cursor */
+@media (min-width: 1024px) {
+    body { cursor: none !important; }
+    a, button, select, input { cursor: none !important; }
+    #custom-cursor {
+        width: 8px;
+        height: 8px;
+        background-color: #10b981 !important;
+        border-radius: 50%;
+        position: fixed;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        z-index: 9999;
+        transition: width 0.2s, height 0.2s;
+        box-shadow: 0 0 10px #10b981, 0 0 20px #10b981 !important;
+    }
+    #custom-cursor-blur {
+        width: 32px;
+        height: 32px;
+        border: 2px solid rgba(16, 185, 129, 0.4) !important;
+        border-radius: 50%;
+        position: fixed;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        z-index: 9998;
+        transition: transform 0.08s ease-out;
+    }
+}
